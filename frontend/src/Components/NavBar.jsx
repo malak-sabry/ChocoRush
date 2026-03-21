@@ -12,7 +12,8 @@ const NavBar = () => {
       <nav className="flex px-4 justify-between items-center">
         <div className="left flex justify-center items-center">
           <div className="logo">
-            <img src={logo} className="w-24" />
+            <a href="/">            <img src={logo} className="w-30" />
+            </a>
           </div>
           <div className="btns flex gap-4">
             <button
@@ -43,11 +44,10 @@ const NavBar = () => {
                 <a
                   href="#"
                   onClick={() => setActiveLink(link)}
-                  className={`px-3 py-2 capitalize rounded-lg transition-all duration-300 ${
-                    activeLink === link
-                      ? "font-bold text-[#4F342FCC]"
-                      : "font-normal text-[#6c494292] hover:text-[#4F342FCC]"
-                  }`}
+                  className={`px-3 py-2 capitalize rounded-lg transition-all duration-300 ${activeLink === link
+                    ? "font-bold text-[#4F342FCC]"
+                    : "font-normal text-[#6c494292] hover:text-[#4F342FCC]"
+                    }`}
                 >
                   {link}
                 </a>

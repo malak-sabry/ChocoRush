@@ -2,10 +2,28 @@ import { FaUserCircle } from "react-icons/fa";
 import { ShoppingCart } from "lucide-react";
 
 import logo from "../assets/logo.png";
-import { useState } from "react";
+
+import { NavLink } from 'react-router-dom'
+
 const NavBar = () => {
-  const [activeLink, setActiveLink] = useState("home");
-  const links = ["home", "all products", "contact us", "about us"];
+  const links = [
+    {
+      name: "home",
+      path: "/"
+    },
+    {
+      name: "all products",
+      path: "/admin/products"
+    },
+    {
+      name: "contact us",
+      path: "/contact"
+    },
+    {
+      name: "about us",
+      path: "/about"
+    },
+  ];
 
   return (
     <>
@@ -39,18 +57,17 @@ const NavBar = () => {
 
         <div className="center">
           <ul className="flex justify-center items-center gap-6">
-            {links.map((link) => (
-              <li key={link}>
-                <a
-                  href="#"
-                  onClick={() => setActiveLink(link)}
-                  className={`px-3 py-2 capitalize rounded-lg transition-all duration-300 ${activeLink === link
-                    ? "font-bold text-[#4F342FCC]"
+            {links.map(({name, path}) => (
+              <li key={path}>
+                <NavLink
+                  to={path}
+                  className={({ isActive }) => `px-3 py-2 capitalize rounded-lg transition-all duration-300 ${isActive 
+                    ? "font-bold text-[#3c2521]"
                     : "font-normal text-[#6c494292] hover:text-[#4F342FCC]"
                     }`}
                 >
-                  {link}
-                </a>
+                  {name}
+                </NavLink>
               </li>
             ))}
           </ul>

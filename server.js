@@ -10,6 +10,8 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 app.use(cors());
 
+app.see
+
 // Connect to the database
 const connectDB = require("./config/db");
 connectDB();
@@ -24,7 +26,7 @@ app.use("/users", require("./routes/users"));
 app.use("/products", require("./routes/products"));
 // All categoty-related routes will start with /categories
 app.use("/categories", require("./routes/categories"));
-
+app.use("/images",express.static("./images"))
 // Get the port from the `.env` file, but use 3000 if it’s not found.
 const PORT = process.env.PORT || 3000;
 

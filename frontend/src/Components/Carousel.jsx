@@ -132,7 +132,9 @@ const Carousel = () => {
         </button>
         <button
           onClick={next}
-          className="absolute right-4 z-20 bg-[#1C120A]/80 hover:bg-[#1C120A] text-[#E8DED3] rounded-full p-2 shadow-lg transition cursor-pointer"
+          className="absolute right-4 z-20 bg-[#1C120A]/80 
+          hover:bg-[#1C120A] text-[#E8DED3] rounded-full
+           p-2 shadow-lg transition cursor-pointer"
           aria-label="Next"
         >
           <ChevronRight className="w-6 h-6" />

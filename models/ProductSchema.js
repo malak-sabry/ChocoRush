@@ -30,8 +30,8 @@ const ProductSchema = new mongoose.Schema({
     default: false,
   },
   discountPercent: {
-    type: String,
-    default: "0%",
+    type: Number,
+    default: 0,
   },
   coverImage: {
     type: String,

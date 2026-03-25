@@ -1,19 +1,67 @@
 import { useEffect, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../Auth/AuthContext"
 function Products() {
 
   const [productList, setProductList] = useState([]);
-  const [message, setMessage] = useState("");
-
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");  
+  const navigate = useNavigate()
+  const { isAuthenticated, isAdmin, user } = useAuth()
   useEffect(() => {
-    fetch("http://localhost:5000/products")
-      .then(res => res.json())
-      .then(data => setProductList(data))
-      .catch(err => console.error("Error fetching products:", err));
-  }, []);
+
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/admin/products", {
+          method: 'GET',
+          credentials: "include",
+
+          headers: {
+            'Content-Type': "application/json"
+          }
+
+        }
+        )
+        if (res.status === 401 || res.status === 403) {
+          setError("Not Authorized.")
+          navigate("/", { replace: true })
+          return
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+
+        const data = await res.json()
+        setProductList(Array.isArray(data) ? data : [])
+      }
+
+      catch (error) {
+        console.log("Error fetching products :", error);
+        setError(error.message)
+        navigate("/", { replace: true })
+
+      }
+      finally {
+        setLoading(false)
+      }
+
+    }
+    if (isAuthenticated && isAdmin) {
+      fetchProducts()
+    } else {
+      console.log('Not authenticated or not admin')
+      navigate("/", { replace: true });
+    }
+  }, [navigate,isAuthenticated,isAdmin]);
 
 
-
+if (loading) {
+        return <div>Loading...</div>
+    }
+    if (error) {
+        return <div>Error: {error}</div>
+    }
 
   return (
     <div className='mt-10'>
@@ -28,7 +76,7 @@ function Products() {
         {productList.map((product) => (
           <div key={product._id} className='flex flex-col 
           items-center  p-4 rounded-lg'>
-<img src={`http://localhost:5000/images/${product.coverImage}` }/>
+            <img src={`http://localhost:5000/images/${product.coverImage}`} />
             <h6 className='text-center my-3'>{product.title}</h6>
             <span className='text-gray-400'>{product?.brand}</span>
             <strong className='text-[#F86D72]'>{product?.price}

@@ -3,10 +3,9 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/ProductSchema");
 const multer = require("multer");
-const { auth } = require("../auth/middleware");
+const { auth, cookieAuth } = require("../auth/middleware");
 
 const storage = multer.diskStorage({
-  //kissed your lips ya nonna | byeee  <
   destination: function (req, file, cb) {
     cb(null, "./images");
   },
@@ -20,8 +19,8 @@ const upload = multer({ storage: storage });
 
 //create product
 router.post(
-  "/",
-  auth("admin"),
+  "/products",
+  cookieAuth,
   upload.single("coverImage"),
   async (req, res) => {
     try {
@@ -63,7 +62,7 @@ router.post(
   },
 );
 // get all products
-router.get("/", async (req, res) => {
+router.get("/products", cookieAuth, async (req, res) => {
   try {
     const products = await Product.find().populate("category", "name");
     return res.json(products);
@@ -88,7 +87,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //edit product
-router.put("/:id", async (req, res) => {
+router.put("/products/:id", cookieAuth, async (req, res) => {
   try {
     const targetProduct = await Product.findByIdAndUpdate(
       req.params.id,
@@ -106,7 +105,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 // delete product
-router.delete("/:id", async (req, res) => {
+router.delete("/products/:id", cookieAuth, async (req, res) => {
   try {
     const targetProduct = await Product.findByIdAndDelete(req.params.id);
     if (!targetProduct) {

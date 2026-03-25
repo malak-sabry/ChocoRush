@@ -10,7 +10,9 @@ import Products from "./Admin/Products.jsx";
 import AdminLayout from "./Admin/AdminLayout.jsx";
 import AddCategory from "./Admin/AddCategory.jsx";
 import About from "./Pages/About.jsx";
-
+import Register from './Pages/Register';
+import Login from "./Pages/Login.jsx";
+import { AuthProvider } from "./Auth/AuthContext.jsx"
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter
@@ -19,15 +21,19 @@ createRoot(document.getElementById("root")).render(
         v7_relativeSplatPath: true,
       }}
     >
-      <Routes>
+      <AuthProvider>
+        <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<AdminLayout />} >
-            <Route path="/admin/add-product" element={<AddProduct/>} />
-            <Route path="/admin/add-category" element={<AddCategory/>} />
-            <Route  index path="/admin/products" element={<Products />} />
+            <Route path="/admin/add-product" element={<AddProduct />} />
+            <Route path="/admin/add-category" element={<AddCategory />} />
+            <Route index path="/admin/products" element={<Products />} />
           </Route>
-      </Routes>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

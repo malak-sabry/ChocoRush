@@ -28,7 +28,7 @@ const Categories = () => {
         md:grid-cols-6 gap-6 max-w-5xl mx-auto">
           {categories.map((cat) => (
             <div
-              key={cat.id}
+              key={cat._id}
               className="card flex flex-col items-center
                bg-[#FCF0E6] rounded-2xl shadow-md p-4
                 hover:scale-105 transition-transform duration-300 cursor-pointer"

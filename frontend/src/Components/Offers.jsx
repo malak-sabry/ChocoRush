@@ -3,6 +3,7 @@ import img from "../assets/almond chocolate.jpg"
 import axios from "axios"
 import { useState } from "react";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Offers = () => {
   const [products, setProducts] = useState([])
@@ -48,17 +49,19 @@ const Offers = () => {
           >
             Special Offers
           </h3>
-          <button className="relative px-4 py-2  rounded-2xl bg-gradient-to-r
+          <Link to="/products"
+           className="relative px-4 py-2  rounded-2xl bg-gradient-to-r
  from-white to-gray-100  text-gray-800 font-medium shadow-md shadow-black/10
    backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-xl
     hover:shadow-black/20 hover:-translate-y-0.5 hover:from-gray-100
      hover:to-white active:translate-y-0 active:shadow-md
 cursor-pointer focus:outline-none focus:ring-2
- focus:ring-gray-300 focus:ring-offset-2">See All</button>
+ focus:ring-gray-300 focus:ring-offset-2">See All</Link>
         </div>
         <div className="cards grid grid-cols-5 justify-center items-center gap-6">
           {products.map((product) => 
             <div
+            key={product._id}
               className=" my-6 relative
     bg-[#E8DED3]
     rounded-2xl

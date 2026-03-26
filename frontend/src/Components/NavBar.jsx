@@ -12,7 +12,7 @@ const NavBar = () => {
 
   const links = [
     { name: "home", path: "/" },
-    { name: "all products", path: "/admin/products" },
+    { name: "all products", path: "/products" },
     { name: "contact us", path: "/contact" },
     { name: "about us", path: "/about" },
   ];

@@ -13,6 +13,7 @@ import About from "./Pages/About.jsx";
 import Register from './Pages/Register';
 import Login from "./Pages/Login.jsx";
 import { AuthProvider } from "./Auth/AuthContext.jsx"
+import ProductGrid from "./Pages/ProductGrid.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductGrid />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />

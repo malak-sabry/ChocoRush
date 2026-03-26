@@ -1,12 +1,13 @@
 // Import dependencies
 const express = require("express");
-const router = express.Router();
 const Product = require("../models/ProductSchema");
 const multer = require("multer");
 const { auth } = require("../auth/middleware");
+const Favourites = require("../models/FavouritesSchema");
+
+const router = express.Router();
 
 const storage = multer.diskStorage({
-  //kissed your lips ya nonna | byeee  <
   destination: function (req, file, cb) {
     cb(null, "./images");
   },
@@ -17,6 +18,35 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+router.post("/favourites", auth("user"), async (req, res) => {
+  const { productId } = req.body;
+  const userId = req.user.id;
+
+
+    /*
+    it means go and find an entry in the favorites table that has same user and product 
+    found it? - delete it then return true
+    didn't find return false
+    */
+  const isDeleted = await Favourites.findOneAndDelete({ userId, productId });
+  if (isDeleted) {
+  
+    return res.status(200).json({
+      message: "product removed from favourites successfully!",
+    });
+  } else {
+    const newFavourite = new Favourites({
+      userId,
+      productId,
+    });
+    await newFavourite.save();
+    return res.status(201).json({
+      message: "product added to favourites successfully!",
+      favouriteProducts: newFavourite,
+    });
+  }
+});
 
 //create product
 router.post(
@@ -51,12 +81,10 @@ router.post(
         coverImage,
       });
       await newProduct.save();
-      return res
-        .status(201)
-        .json({
-          message: "product created successfully!",
-          product: newProduct,
-        });
+      return res.status(201).json({
+        message: "product created successfully!",
+        product: newProduct,
+      });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

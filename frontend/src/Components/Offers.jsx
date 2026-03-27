@@ -1,13 +1,13 @@
 import { ShoppingCart } from "lucide-react";
-import img from "../assets/almond chocolate.jpg"
 import axios from "axios"
 import { useState } from "react";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Offers = () => {
   const [products, setProducts] = useState([])
   const [catetogies, setCategories] = useState([])
+  const navigate = useNavigate()
   // fetch products
   const getProducts = async () => {
     const response = await axios.get("http://localhost:5000/products")
@@ -28,9 +28,9 @@ const Offers = () => {
   }, []);
 
   return (
-  
+
     <>
-      <section className="flex card bg-[#1C120A]/80 rounded-xl ">
+      <section className="flex card bg-[#1C120A]/80 rounded-xl mb-4 ">
         <div className=" flex justify-center items-center flex-col
       gap-4 p-9">
           <h3
@@ -49,8 +49,8 @@ const Offers = () => {
           >
             Special Offers
           </h3>
-          <Link to="/products"
-           className="relative px-4 py-2  rounded-2xl bg-gradient-to-r
+          <Link to="/shop"
+            className="relative px-4 py-2  rounded-2xl bg-gradient-to-r
  from-white to-gray-100  text-gray-800 font-medium shadow-md shadow-black/10
    backdrop-blur-sm transition-all duration-300 ease-out hover:shadow-xl
     hover:shadow-black/20 hover:-translate-y-0.5 hover:from-gray-100
@@ -59,9 +59,11 @@ cursor-pointer focus:outline-none focus:ring-2
  focus:ring-gray-300 focus:ring-offset-2">See All</Link>
         </div>
         <div className="cards grid grid-cols-5 justify-center items-center gap-6">
-          {products.map((product) => 
+          {products.map((product) =>
             <div
-            key={product._id}
+              onClick={() => navigate(`/shop/${product._id}`)}
+
+              key={product._id}
               className=" my-6 relative
     bg-[#E8DED3]
     rounded-2xl
@@ -110,11 +112,11 @@ cursor-pointer focus:outline-none focus:ring-2
               {/* Price + cart */}
               <div className="mt-3 flex items-center justify-between ">
                 <div className="flex flex-col justify-center gap-1 items-start">
-<p className="text-sm font-semibold text-[#1C120A] px-2">
-                  ${product.price}
-                </p>
-                {/* category */}
-                <p className="
+                  <p className="text-sm font-semibold text-[#1C120A] px-2">
+                    ${product.price}
+                  </p>
+                  {/* category */}
+                  <p className="
   text-[11px]
   font-medium
   text-[#6B3F1D]
@@ -127,10 +129,10 @@ cursor-pointer focus:outline-none focus:ring-2
   tracking-wide
   capitalize
 ">
-  {product.category?.name}
-</p>
+                    {product.category?.name}
+                  </p>
                 </div>
-                
+
 
                 <button
                   className="p-2 rounded-full  bg-[#4F342F]  shadow-sm

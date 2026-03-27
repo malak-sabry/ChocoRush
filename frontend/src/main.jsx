@@ -14,6 +14,9 @@ import Register from './Pages/Register';
 import Login from "./Pages/Login.jsx";
 import { AuthProvider } from "./Auth/AuthContext.jsx"
 import ProductGrid from "./Pages/ProductGrid.jsx";
+import Favourites from "./Pages/Favourites.jsx";
+import ProductPage from "./Pages/ProductPage.jsx";
+import Contact  from "./Pages/Contact.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter
@@ -25,7 +28,11 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductGrid />} />
+
+            <Route path="/shop" element={<ProductGrid />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="shop/favorites" element={<Favourites />} />
+             <Route path="/shop/:id" element={<ProductPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />

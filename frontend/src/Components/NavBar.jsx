@@ -12,7 +12,7 @@ const NavBar = () => {
 
   const links = [
     { name: "home", path: "/" },
-    { name: "all products", path: "/products" },
+    { name: "shop", path: "/shop" },
     { name: "contact us", path: "/contact" },
     { name: "about us", path: "/about" },
   ];
@@ -99,7 +99,7 @@ const NavBar = () => {
                 />
                 <Heart
                   className="w-7 h-7 cursor-pointer text-[#4F342F]"
-                  onClick={() => navigate("/favourites")}
+                  onClick={() => navigate("/shop/favorites")}
                 />
               </div>
             )}

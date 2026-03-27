@@ -16,7 +16,7 @@ const auth = (requiredRole = null) => {
         return res.status(400).json({ message: "Invalid token."});
       } else {
         console.log(decoded);
-        req.user = decoded;//when did u type this wana b3mel el middleware embare7 cool
+        req.user = decoded;
         if (requiredRole && decoded.role !== requiredRole) {
           return res.status(403).json({
             message: "Access denied. Insuffecient permission.",

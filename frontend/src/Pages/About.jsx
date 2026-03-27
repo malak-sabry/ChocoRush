@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowRight, Plus } from "lucide-react";
-import NavBar from "../Components/NavBar";
+import Layout from "../Components/Layout";
 
 const faqs = [
   {
@@ -37,14 +37,13 @@ export default function About() {
 
   return (
     <>
-      <NavBar />
+    <Layout>
       <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet"
       />
 
-      {/* Page background: #E8DED3 */}
-      <div className="min-h-screen px-4 py-16 bg-[#E8DED3] font-serif">
+      <div className="min-h-screen px-4 py-16 bg-[#E8DED3] font-serif mb-4">
         <div className="max-w-4xl mx-auto flex flex-col gap-16">
 
           {/* ── Our Story Section ── */}
@@ -157,7 +156,9 @@ export default function About() {
           </section>
 
         </div>
+
       </div>
+      </Layout>
     </>
   );
 }

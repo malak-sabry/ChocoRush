@@ -19,11 +19,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/favourites", auth("user"), async (req, res) => {
+router.post("/favourites", auth(null), async (req, res) => {
   const { productId } = req.body;
   const userId = req.user.id;
-
-
     /*
     it means go and find an entry in the favorites table that has same user and product 
     found it? - delete it then return true
@@ -46,6 +44,13 @@ router.post("/favourites", auth("user"), async (req, res) => {
       favouriteProducts: newFavourite,
     });
   }
+});
+
+router.get("/favourites", auth(null), async (req, res) => {
+  const userId = req.user.id;
+  const favorites = await Favourites.find({userId}).populate('productId')
+
+  res.status(200).send(favorites)
 });
 
 //create product

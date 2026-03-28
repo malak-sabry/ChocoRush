@@ -5,7 +5,7 @@ const app = express();
 // This must be at the top because most things depend on it
 // `.config()` -> this makes it read and load the `.env` file
 const dotenv = require("dotenv").config();
-const cookieParser =require("cookie-parser")
+const cookieParser = require("cookie-parser");
 // Enable Cross-Origin Resource Sharing (CORS)
 const cors = require("cors");
 app.use(
@@ -17,14 +17,13 @@ app.use(
   }),
 );
 
-
 // Connect to the database
 const connectDB = require("./config/db");
 connectDB();
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
 
 // Route handlers
 // All user-related routes will start with /users
@@ -33,6 +32,7 @@ app.use("/users", require("./routes/users"));
 app.use("/products", require("./routes/products"));
 // All categoty-related routes will start with /categories
 app.use("/categories", require("./routes/categories"));
+app.use("/carts", require("./routes/carts"));
 app.use("/images", express.static("./images"));
 
 app.use("/admin", require("./routes/admin"));

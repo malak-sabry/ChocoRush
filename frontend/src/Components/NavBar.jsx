@@ -3,8 +3,11 @@ import logo from "../assets/logo.png";
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from "../Auth/AuthContext";
 import { useState, useRef, useEffect } from "react";
+import { useCart } from "../Auth/CartContext";
 
 const NavBar = () => {
+  const{setOpen,open} =useCart()
+  
   const navigate = useNavigate()
   const { user, logout, isAuthenticated, isAdmin } = useAuth()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -95,8 +98,7 @@ const NavBar = () => {
               <div className="flex items-center gap-4">
                 <ShoppingCart
                   className="w-7 h-7 cursor-pointer text-[#4F342F]"
-                  onClick={() => navigate("/cart")}
-                />
+  onClick={() => setOpen(true)}                />
                 <Heart
                   className="w-7 h-7 cursor-pointer text-[#4F342F]"
                   onClick={() => navigate("/shop/favorites")}

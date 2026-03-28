@@ -229,7 +229,7 @@ export default function ProductPage() {
                         >
                           −
                         </button>
-                        <span className="w-10 text-center text-sm font-semibold text-stone-800">
+                      <span className="w-10 text-center text-sm font-semibold text-stone-800">
                           {qty}
                         </span>
                         <button

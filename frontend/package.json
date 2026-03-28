@@ -19,6 +19,7 @@
     "react-multi-carousel": "^2.8.6",
     "react-router-dom": "^6.23.0",
     "react-router-hash-link": "^2.4.3",
+    "react-toastify": "^11.0.5",
     "swiper": "^10.0.0",
     "tailwindcss": "^4.2.2"
   },

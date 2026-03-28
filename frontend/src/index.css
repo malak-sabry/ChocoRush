@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Baloo+2:wght@400..800&family=Fredoka:wght@300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik+Gemstones&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Baloo+2:wght@400..800&family=Fredoka:wght@300..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik+Gemstones&family=Trispace:wght@100..800&display=swap');
 @import "tailwindcss";
 body{
     font-family: "Roboto", sans-serif;
@@ -7,9 +8,7 @@ body{
   font-style: normal;
   background-color: #E8DED3;
 }
-/* #hero-bg {
-  background-image: url("./assets/hero.png");
-  background-position:center ; 
-  background-size: cover;     
-  background-repeat: no-repeat;    
-} */
+.header{
+      font-family: "Trispace", sans-serif;
+  font-style: normal;
+}

@@ -6,12 +6,13 @@ import { useState, useRef, useEffect } from "react";
 import { useCart } from "../Auth/CartContext";
 
 const NavBar = () => {
-  const{setOpen,open} =useCart()
-  
+  const { setOpen, open } = useCart()
+
   const navigate = useNavigate()
   const { user, logout, isAuthenticated, isAdmin } = useAuth()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef(null)
+  const { cart } = useCart()
 
   const links = [
     { name: "home", path: "/" },
@@ -96,9 +97,17 @@ const NavBar = () => {
               </button>
             ) : (
               <div className="flex items-center gap-4">
-                <ShoppingCart
-                  className="w-7 h-7 cursor-pointer text-[#4F342F]"
-  onClick={() => setOpen(true)}                />
+                <div className="relative">
+                  {cart && cart.items?.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-400 text-white text-xs rounded-full px-2 py-0.5">
+                      {cart.items.reduce((sum, item) => sum + item.quantity, 0)}
+                    </span>
+                  )}
+                  <ShoppingCart
+                    className="w-7 h-7 cursor-pointer text-[#4F342F]"
+                    onClick={() => setOpen(true)} />
+                </div>
+
                 <Heart
                   className="w-7 h-7 cursor-pointer text-[#4F342F]"
                   onClick={() => navigate("/shop/favorites")}

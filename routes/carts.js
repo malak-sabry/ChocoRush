@@ -8,10 +8,11 @@ const { cookieAuth } = require("../auth/middleware");
 // ✅ GET CART
 router.get("/", cookieAuth, async (req, res) => {
   try {
-    let cart = await Cart.findOne({ user: req.user.id }).populate(
-      "items.product",
-      "title price coverImage stock",
-    );
+    let cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      select: "title price coverImage stock description brand category",
+      populate: { path: "category", select: "name" },
+    });
 
     if (!cart) {
       cart = new Cart({ user: req.user.id, items: [] });
@@ -32,18 +33,13 @@ router.get("/", cookieAuth, async (req, res) => {
     });
   }
 });
-
-// ✅ ADD TO CART
 router.post("/", cookieAuth, async (req, res) => {
   try {
     const { productId } = req.body;
 
     const product = await Product.findById(productId);
 
-    let cart = await Cart.findOne({ user: req.user.id }).populate(
-      "items.product",
-      "title price coverImage stock",
-    );
+    let cart = await Cart.findOne({ user: req.user.id });
 
     if (!cart) {
       cart = new Cart({ user: req.user.id, items: [] });
@@ -60,6 +56,7 @@ router.post("/", cookieAuth, async (req, res) => {
         product: productId,
         price: product.price,
         quantity: 1,
+        category: product.category,
       });
     }
 
@@ -68,23 +65,29 @@ router.post("/", cookieAuth, async (req, res) => {
     await product.save();
     await cart.save();
 
+    cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      select: "title price coverImage stock description brand category",
+      populate: { path: "category", select: "name" },
+    });
+
     return res.json({ success: true, cart });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error adding to cart ", error: error.message });
+      .json({ message: "Error adding to cart", error: error.message });
   }
 });
-
 // ✅ UPDATE CART
-router.put("/:id", cookieAuth, async (req, res) => {
+router.put("/", cookieAuth, async (req, res) => {
   try {
     const { quantity, productId } = req.body;
 
-    let cart = await Cart.findOne({ user: req.user.id }).populate(
-      "items.product",
-      "title price coverImage stock",
-    );
+    let cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      select: "title price coverImage stock description brand category",
+      populate: { path: "category", select: "name" },
+    });
 
     if (!cart) {
       return res.status(400).json({ message: "Cart not found." });
@@ -94,8 +97,11 @@ router.put("/:id", cookieAuth, async (req, res) => {
       (item) => item.product._id.toString() === productId,
     );
 
-    const product = await Product.findById(productId);
+    if (!item) {
+      return res.status(400).json({ message: "Item not found in cart." });
+    }
 
+    const product = await Product.findById(productId);
     const diff = quantity - item.quantity;
 
     if (diff > 0) {
@@ -120,34 +126,39 @@ router.put("/:id", cookieAuth, async (req, res) => {
   }
 });
 
-// delete
-router.delete("/:id", cookieAuth, async (req, res) => {
+router.delete("/:productId", cookieAuth, async (req, res) => {
   try {
-    const { productId } = req.body;
-    let cart = await Cart.findOne({ user: req.user.id }).populate(
-      "items.product",
-      "title price coverImage stock",
-    );
+    const { productId } = req.params;
+
+    let cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      select: "title price coverImage stock description brand category",
+      populate: { path: "category", select: "name" },
+    });
 
     if (!cart) {
       return res.status(400).json({ message: "Cart not found." });
     }
 
     const itemIndex = cart.items.findIndex(
-      (item) => item.product.toString() === productId,
+      (item) => item.product._id.toString() === productId,
     );
 
     if (itemIndex === -1) {
       return res.status(400).json({ message: "Item not found in the cart" });
     }
+
     const item = cart.items[itemIndex];
     const product = await Product.findById(productId);
+
     if (product) {
-      product.stock += 1;
+      product.stock += item.quantity;
       await product.save();
     }
+
     cart.items.splice(itemIndex, 1);
     await cart.save();
+
     res.json({ success: true, cart });
   } catch (error) {
     res
@@ -155,5 +166,4 @@ router.delete("/:id", cookieAuth, async (req, res) => {
       .json({ message: "Error removing item", error: error.message });
   }
 });
-
 module.exports = router;

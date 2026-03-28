@@ -28,7 +28,7 @@ export function CartProvider({ children }) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({productId})
+      body: JSON.stringify({ productId })
 
     })
     const data = await res.json()
@@ -42,7 +42,7 @@ export function CartProvider({ children }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({productId, quantity})
+        body: JSON.stringify({ productId, quantity })
       })
     const data = await res.json()
     setCart(data.cart)
@@ -61,7 +61,7 @@ export function CartProvider({ children }) {
 
   return (
     <>
-      <CartContext.Provider value={{ cart, addToCart, updateCart, removeFromCart,open,setOpen }}>
+      <CartContext.Provider value={{ cart, addToCart, updateCart, removeFromCart, open, setOpen }}>
         {children}
       </CartContext.Provider>    </>
   )

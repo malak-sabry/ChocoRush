@@ -16,6 +16,7 @@ const CartItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
 });
 
 const CartSchema = new mongoose.Schema({

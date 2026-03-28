@@ -4,29 +4,29 @@ import { Heart, ImageOff, SearchX, AlertCircle, ShoppingCart } from "lucide-reac
 import { useNavigate } from "react-router-dom";
 import Layout from "./../Components/Layout";
 import { useCart } from "../Auth/CartContext";
+import { useAuth } from "../Auth/AuthContext";
 import { toast } from "react-toastify";
+
 function ProductGrid() {
-  //  STATE DEFINITIONS 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [favourites, setFavourites] = useState({});
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
+  const { user } = useAuth();
 
-  // FETCH PRODUCTS Runs once on mount
+  // FETCH PRODUCTS
   useEffect(() => {
     axios
       .get("http://localhost:5000/products")
       .then((res) => setProducts(res.data))
-      .catch((e) =>
-        setError(e.response?.data?.message || e.message)
-      )
+      .catch((e) => setError(e.response?.data?.message || e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [cart]);
 
-  //  FETCH FAVOURITES Independent from products
+  // FETCH FAVOURITES
   useEffect(() => {
     axios
       .get("http://localhost:5000/products/favourites", { withCredentials: true })
@@ -42,7 +42,17 @@ function ProductGrid() {
       .catch(() => { });
   }, []);
 
-  //  TOGGLE FAVOURITE Optimistic UI update
+  // REQUIRE AUTH
+  const requireAuth = (e, action) => {
+    e.stopPropagation();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    action();
+  };
+
+  // TOGGLE FAVOURITE
   const toggleFav = async (e, productId) => {
     e.stopPropagation();
 
@@ -65,7 +75,7 @@ function ProductGrid() {
     }
   };
 
-  //  SEARCH FILTER
+  // SEARCH FILTER
   const filtered = products.filter(
     (p) =>
       p.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -125,7 +135,6 @@ function ProductGrid() {
           {!loading && !error && filtered.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
               {filtered.map((product) => {
-
                 const imageUrl = product.coverImage
                   ? `http://localhost:5000/images/${product.coverImage}`
                   : null;
@@ -160,14 +169,15 @@ function ProductGrid() {
 
                       {/* DISCOUNT BADGE */}
                       {product.discountPercent > 0 && (
-                        <span className="absolute top-3 left-3 bg-[#7B3F1E] text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
+                        <span className="absolute top-3 left-3 bg-[#7B3F1E]
+                         text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
                           {product.discountPercent}%
                         </span>
                       )}
 
                       {/* FAVOURITE BUTTON */}
                       <button
-                        onClick={(e) => toggleFav(e, product._id)}
+                        onClick={(e) => requireAuth(e, () => toggleFav(e, product._id))}
                         className="absolute top-3 right-3 w-8 h-8 bg-white/60
                         rounded-full flex items-center justify-center"
                       >
@@ -190,8 +200,8 @@ function ProductGrid() {
                       </p>
 
                       {/* PRICE AND ADD TO CART */}
-                      <div className="flex justify-between items-end ">
-                        <div className="mt-1 ">
+                      <div className="flex justify-between items-end">
+                        <div className="mt-1">
                           {discountedPrice && (
                             <span className="text-[10px] line-through text-[#B89880]">
                               ${product.price}
@@ -204,23 +214,46 @@ function ProductGrid() {
 
                         {/* ADD TO CART BUTTON */}
                         <button
-                          onClick={() => {
-                            addToCart(product._id);
-                            setProducts(
-                              prev => prev.map(p => p._id === product._id ? { ...p, stock: p.stock - 1 } : p)
-                            );
-                            toast.success("Added To Cart Successfully!");
-                          }}
+                          onClick={(e) =>
+                            requireAuth(e, () => {
+                              addToCart(product._id);
+                              setProducts((prev) =>
+                                prev.map((p) =>
+                                  p._id === product._id
+                                    ? { ...p, stock: p.stock - 1 }
+                                    : p
+                                )
+                              );
+                              toast.success("Added To Cart Successfully!");
+                            })
+                          }
                           disabled={product.stock === 0}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold transition-all duration-200 active:scale-90  cursor-pointer
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold transition-all duration-200 active:scale-90 cursor-pointer
                           ${product.stock === 0
                               ? "bg-[#e8ddd2] text-[#B89880] cursor-not-allowed"
-                              : "bg-[#3B1F0D] text-white hover:bg-[#5a483e]"}`}
+                              : "bg-[#3B1F0D] text-white hover:bg-[#5a483e]"
+                            }`}
                         >
                           <ShoppingCart size={14} /> Add
                         </button>
                       </div>
 
+                      {/* STOCK INDICATOR */}
+                      <div className="flex items-center gap-1.5">
+                        {product.stock === 0 ? (
+                          <span className="text-[10px] font-semibold text-red-400">
+                            Out of Stock
+                          </span>
+                        ) : product.stock <= 5 ? (
+                          <span className="text-[10px] font-semibold text-orange-400">
+                            Only {product.stock} left!
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-semibold text-green-600">
+                            In Stock ({product.stock})
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

@@ -4,11 +4,14 @@ import { useCart } from "../Auth/CartContext";
 
 const Cart = () => {
   const { setOpen, open, cart, updateCart, removeFromCart } = useCart();
-  const isEmpty = !cart || cart.items.length === 0;
+  const isEmpty = !cart || !cart.items || cart.items.length === 0;
 
   const shipping = 5;
   const subtotal = !isEmpty
-    ? cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+    ? cart.items.reduce(
+        (sum, item) => sum + ((item.product?.price ?? 0) * item.quantity),
+        0
+      )
     : 0;
   const total = subtotal + shipping;
 
@@ -54,76 +57,79 @@ const Cart = () => {
         {!isEmpty && (
           <>
             <div className="cards overflow-y-auto flex-1">
-              {cart?.items.map((item) => {
-                const itemTotal = (item.product.price * item.quantity).toFixed(2);
+              {cart.items
+                .filter(item => item.product) // skip invalid items
+                .map((item) => {
+                  const itemTotal = ((item.product?.price ?? 0) * item.quantity).toFixed(2);
 
-                return (
-                  <div
-                    className="card border-b border-black/10 pb-6 mx-4 mt-4"
-                    key={item._id}
-                  >
-                    <div className="flex gap-4">
-                      <div className="bg-[#FFFBEB]/50 p-4 rounded-md shrink-0">
-                        <img
-                          src={`http://localhost:5000/images/${item?.product?.coverImage}`}
-                          className="w-20 h-20 object-contain"
-                          alt={item.product.title}
-                        />
-                      </div>
+                  return (
+                    <div
+                      className="card border-b border-black/10 pb-6 mx-4 mt-4"
+                      key={item._id}
+                    >
+                      <div className="flex gap-4">
+                        <div className="bg-[#FFFBEB]/50 p-4 rounded-md shrink-0">
+                          <img
+                            src={`http://localhost:5000/images/${item.product?.coverImage ?? "placeholder.jpg"}`}
+                            className="w-20 h-20 object-contain"
+                            alt={item.product?.title ?? "Product"}
+                          />
+                        </div>
 
-                      <div className="flex flex-col flex-1">
-                        <h3 className="text-lg font-medium">
-                          {item.product.title}
-                        </h3>
-                        <p className="text-sm text-black/60">
-                          {item?.product?.category?.name}
-                        </p>
+                        <div className="flex flex-col flex-1">
+                          <h3 className="text-lg font-medium">
+                            {item.product?.title ?? "Deleted Product"}
+                          </h3>
+                          <p className="text-sm text-black/60">
+                            {item.product?.category?.name ?? "-"}
+                          </p>
 
-                        <div className="mt-6">
-                          <div className="flex items-center overflow-hidden w-fit rounded-lg border border-amber-200 bg-amber-50">
-                            <button
-                              className="px-3 py-2 text-lg font-bold text-amber-800 disabled:opacity-40"
-                              disabled={item.quantity <= 1}
-                              onClick={() =>
-                                updateCart(item.product._id, item.quantity - 1)
-                              }
-                            >
-                              −
-                            </button>
-                            <span className="w-10 text-center text-sm font-semibold">
-                              {item.quantity}
+                          <div className="mt-6">
+                            <div className="flex items-center overflow-hidden w-fit rounded-lg border border-amber-200 bg-amber-50">
+                              <button
+                                className="px-3 py-2 text-lg font-bold text-amber-800 disabled:opacity-40"
+                                disabled={item.quantity <= 1}
+                                onClick={() =>
+                                  updateCart(item.product._id, item.quantity - 1)
+                                }
+                              >
+                                −
+                              </button>
+                              <span className="w-10 text-center text-sm font-semibold">
+                                {item.quantity}
+                              </span>
+                              <button
+                                className="px-3 py-2 text-lg font-bold text-amber-800"
+                                disabled={item.product?.stock === 0}
+                                onClick={() =>
+                                  updateCart(item.product._id, item.quantity + 1)
+                                }
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-end justify-between">
+                          <Trash2
+                            className="w-6 h-6 text-black/40 cursor-pointer hover:text-red-500 transition-colors"
+                            onClick={() => removeFromCart(item.product._id)}
+                          />
+
+                          <div className="flex flex-col items-end mt-8">
+                            <span className="text-sm font-extrabold text-amber-900">
+                              ${itemTotal}
                             </span>
-                            <button
-                              className="px-3 py-2 text-lg font-bold text-amber-800"
-                              onClick={() =>
-                                updateCart(item.product._id, item.quantity + 1)
-                              }
-                            >
-                              +
-                            </button>
+                            <span className="text-xs text-stone-500">
+                              ${item.product?.price ?? 0} × {item.quantity}
+                            </span>
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex flex-col items-end justify-between">
-                        <Trash2
-                          className="w-6 h-6 text-black/40 cursor-pointer hover:text-red-500 transition-colors"
-                          onClick={() => removeFromCart(item.product._id)}
-                        />
-
-                        <div className="flex flex-col items-end mt-8">
-                          <span className="text-sm font-extrabold text-amber-900">
-                            ${itemTotal}
-                          </span>
-                          <span className="text-xs text-stone-500">
-                            ${item.product.price} × {item.quantity}
-                          </span>
-                        </div>
-                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
 
             {/* CART FOOTER */}

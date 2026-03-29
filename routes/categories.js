@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-//create category
+// create category
 router.post("/", upload.single("coverImage"), async (req, res) => {
   const { name } = req.body;
   const coverImage = req.file?.filename;
@@ -24,20 +24,24 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
   if (!name) {
     return res.status(400).json({ error: "Name is required!" });
   }
-  const newCategory = new Category({
-    name,
-    coverImage,
-  });
+  const newCategory = new Category({ name, coverImage });
   await newCategory.save();
   return res
     .status(201)
     .json({ message: "category created successfully!", category: newCategory });
 });
 
-//edit category
-router.put("/:id", async (req, res) => {
+// edit category — supports optional image update via multipart/form-data
+router.put("/:id", upload.single("coverImage"), async (req, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
+    const updates = { ...req.body };
+
+    // If a new image was uploaded, overwrite coverImage
+    if (req.file?.filename) {
+      updates.coverImage = req.file.filename;
+    }
+
+    const category = await Category.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
     if (!category) {
@@ -64,11 +68,24 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// get all products
+// get all categories
 router.get("/", async (req, res) => {
   try {
     const categories = await Category.find();
     return res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// get single category
+router.get("/:id", async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(400).json({ message: "category not found" });
+    }
+    return res.status(200).json({ category });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -13,7 +13,6 @@ const NavBar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef(null)
   const { cart } = useCart()
-
   const links = [
     { name: "home", path: "/" },
     { name: "shop", path: "/shop" },
@@ -128,15 +127,17 @@ const NavBar = () => {
                     Welcome, {user?.name}
                   </span>
                   <button
-                    onClick={() => { setIsProfileOpen(false); navigate("/profile") }}
-                    className="text-left text-sm text-[#4F342F] capitalize 
+                    onClick={() => { setIsProfileOpen(false); navigate("/profile") 
+                      navigate("/profile")
+                    }}
+                    className="text-left cursor-pointer text-sm text-[#4F342F] capitalize 
                     hover:font-medium transition-all duration-200"
                   >
                     My Profile
                   </button>
                   <button
                     onClick={() => { setIsProfileOpen(false); handleLogout() }}
-                    className="text-left text-sm text-red-400 capitalize hover:font-medium transition-all duration-200"
+                    className="text-left cursor-pointer text-sm text-red-400 capitalize hover:font-medium transition-all duration-200"
                   >
                     Logout
                   </button>

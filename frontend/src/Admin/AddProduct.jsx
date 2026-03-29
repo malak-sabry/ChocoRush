@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+
 const AddProduct = () => {
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]);
   const [loadingCats, setLoadingCats] = useState(true);
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [preview, setPreview] = useState(null)
+  const [preview, setPreview] = useState(null);
   const [form, setForm] = useState({
     title: "",
     brand: "",
@@ -13,83 +15,74 @@ const AddProduct = () => {
     stock: "",
     category: "",
     discountPercent: "",
-    isFeautred: false,
+    isFeatured: false,
     isOnSale: false,
     coverImage: null,
-  })
+  });
 
-
+  // Load categories
   useEffect(() => {
     const loadCats = async () => {
       try {
-        const res = await fetch("http://localhost:5000/categories", {
-          method: "GET",
-        })
-        const data = await res.json()
-        setCategories(Array.isArray(data) ? data : (data?.categories || []));
+        const res = await axios.get("http://localhost:5000/categories", { withCredentials: true });
+        setCategories(Array.isArray(res.data) ? res.data : (res.data?.categories || []));
       } catch (error) {
         console.error("Failed to load categories:", error);
       } finally {
         setLoadingCats(false);
       }
-    }
-
+    };
     loadCats();
-
-  }, [])
+  }, []);
 
   const onChange = (e) => {
     const { name, type, value, checked, files } = e.target;
-    if (type == "file") {
+    if (type === "file") {
       const file = files?.[0] || null;
-
-      setForm((p) => ({ ...p, [name]: file }))
-      setPreview(file ? URL.createObjectURL(file) : null)
-      return
+      setForm((p) => ({ ...p, [name]: file }));
+      setPreview(file ? URL.createObjectURL(file) : null);
+      return;
     }
-    if (type == "checkbox") {
-      setForm((p) => ({ ...p, [name]: checked }))
-      return
+    if (type === "checkbox") {
+      setForm((p) => ({ ...p, [name]: checked }));
+      return;
     }
+    setForm((p) => ({ ...p, [name]: value }));
+  };
 
-    setForm((p) => ({ ...p, [name]: value }))
-
-  }
   const onSubmit = async (e) => {
-    e.preventDefault()
-    setMessage(null)
+    e.preventDefault();
+    setMessage(null);
+
     if (!form.title || !form.brand || !form.description || !form.price || !form.stock) {
-      setMessage("❌ All fields (title, brand, description, price, stock) are required.");
+      setMessage({
+        type: "error",
+        text: "All fields (title, brand, description, price, stock) are required.",
+      });
       return;
     }
 
-    const fd = new FormData()
-    fd.append("title", form.title)
+    const fd = new FormData();
+    fd.append("title", form.title);
     fd.append("brand", form.brand);
     fd.append("description", form.description);
     fd.append("price", String(form.price));
     fd.append("stock", String(form.stock));
     fd.append("discountPercent", String(form.discountPercent));
     if (form.category) fd.append("category", form.category);
-
-    fd.append("isFeautred", String(form.isFeautred));
+    fd.append("isFeatured", String(form.isFeatured));
     fd.append("isOnSale", String(form.isOnSale));
-
     if (form.coverImage) fd.append("coverImage", form.coverImage);
 
     try {
       setSubmitting(true);
-      const res = await fetch("http://localhost:5000/products", {
-        method: "POST",
-        body: fd,
-        credentials: "include",
+      const res = await axios.post("http://localhost:5000/products", fd, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const data = await res.json()
-      if (!res.ok) {
-        throw new Error(data?.error || "Failed to add product");
-      }
-      setMessage("product added successfully")
+      setMessage({ type: "success", text: "Product added successfully!" });
+
       setForm({
         title: "",
         brand: "",
@@ -98,61 +91,79 @@ const AddProduct = () => {
         stock: "",
         category: "",
         discountPercent: "",
-        isFeautred: false,
+        isFeatured: false,
         isOnSale: false,
         coverImage: null,
-      })
-      setPreview(null)
+      });
+      setPreview(null);
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.response?.data?.error || error.message || "Failed to add product",
+      });
+    } finally {
+      setSubmitting(false);
     }
-    catch (error) {
-      setMessage("❌ " + error.message)
-    }
-    finally {
-      setSubmitting(false)
-    }
+  };
 
-  }
+  const inputClass = `w-full px-4 py-3 rounded-xl border border-[#c9b49a]
+    bg-white text-[#4a3728] placeholder-[#c0a88e]
+    focus:outline-none focus:ring-2 focus:ring-[#a07850]
+    transition duration-200`;
 
-
+  const labelClass = "text-[#4a3728] font-semibold text-sm";
 
   return (
-    <>
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Add Book</h2>
+    <section className="min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl bg-[#FCF0E6] rounded-3xl shadow-xl p-8">
 
-        <form onSubmit={onSubmit} className="bg-white border
-       border-slate-200 rounded-xl p-5 space-y-4">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-[#4a3728]">Add Product</h1>
+          <p className="text-[#8a6d5a] text-sm mt-1">
+            Fill in the details to add a new product
+          </p>
+        </div>
+
+        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+
+          {/* Title & Brand */}
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-1">Title *</label>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>
+                Title <span className="text-red-400">*</span>
+              </label>
               <input
                 name="title"
                 value={form.title}
                 onChange={onChange}
-                className="w-full rounded-lg border
-               border-slate-300 px-3 py-2 outline-none
-                focus:ring-2 focus:ring-slate-300"
                 placeholder="Product title"
+                className={inputClass}
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm mb-1">Brand *</label>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>
+                Brand <span className="text-red-400">*</span>
+              </label>
               <input
                 name="brand"
                 value={form.brand}
                 onChange={onChange}
-                className="w-full rounded-lg border
-               border-slate-300 px-3 py-2 outline-none
-                focus:ring-2 focus:ring-slate-300"
                 placeholder="Brand name"
+                className={inputClass}
                 required
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm mb-1">Price *</label>
+          {/* Price & Stock */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>
+                Price <span className="text-red-400">*</span>
+              </label>
               <input
                 type="number"
                 name="price"
@@ -160,16 +171,16 @@ const AddProduct = () => {
                 step="0.01"
                 value={form.price}
                 onChange={onChange}
-                className="w-full rounded-lg border
-               border-slate-300 px-3 py-2 outline-none 
-               focus:ring-2 focus:ring-slate-300"
                 placeholder="e.g. 19.99"
+                className={inputClass}
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-sm mb-1">Stock *</label>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>
+                Stock <span className="text-red-400">*</span>
+              </label>
               <input
                 type="number"
                 name="stock"
@@ -177,50 +188,49 @@ const AddProduct = () => {
                 step="1"
                 value={form.stock}
                 onChange={onChange}
-                className="w-full rounded-lg border
-               border-slate-300 px-3 py-2 outline-none
-                focus:ring-2 focus:ring-slate-300"
                 placeholder="e.g. 20"
+                className={inputClass}
                 required
               />
             </div>
+          </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-sm mb-1">Description *</label>
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={onChange}
-                rows={4}
-                className="w-full rounded-lg border border-slate-300 
-              px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300"
-                placeholder="Write a short description..."
-                required
-              />
-            </div>
+          {/* Description */}
+          <div className="flex flex-col gap-1.5">
+            <label className={labelClass}>
+              Description <span className="text-red-400">*</span>
+            </label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={onChange}
+              rows={4}
+              placeholder="Write a short description..."
+              className={inputClass}
+              required
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm mb-1">Category</label>
+          {/* Category & Discount */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Category</label>
               <select
                 name="category"
                 value={form.category}
                 onChange={onChange}
                 disabled={loadingCats}
-                className="w-full rounded-lg border border-slate-300 
-              px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300 bg-white"
+                className={`${inputClass} bg-white`}
               >
-                <option value="">{loadingCats ? "Loading..." : "Select category"}
-                </option>
+                <option value="">{loadingCats ? "Loading..." : "Select category"}</option>
                 {categories?.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.name}
-                  </option>
+                  <option key={c._id} value={c._id}>{c.name}</option>
                 ))}
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm mb-1">Discount Percent</label>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Discount Percent</label>
               <input
                 type="number"
                 name="discountPercent"
@@ -229,91 +239,129 @@ const AddProduct = () => {
                 step="1"
                 value={form.discountPercent}
                 onChange={onChange}
-                className="w-full rounded-lg border border-slate-300 px-3 
-              py-2 outline-none focus:ring-2 focus:ring-slate-300"
                 placeholder="e.g. 10"
+                className={inputClass}
               />
-            </div>
-
-            <div className="flex items-center gap-6 md:col-span-2">
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="isFeautred"
-                  checked={form.isFeautred}
-                  onChange={onChange}
-                  className="h-4 w-4 rounded border-slate-300"
-                />
-                <span className="text-sm">Featured</span>
-              </label>
-
-
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="isFeautred"
-                  checked={form.discountPercent}
-                  onChange={onChange}
-                  className="h-4 w-4 rounded border-slate-300"
-                />
-                <span className="text-sm">discount Percent</span>
-              </label>
-
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="isOnSale"
-                  checked={form.isOnSale}
-                  onChange={onChange}
-                  className="h-4 w-4 rounded border-slate-300"
-                />
-                <span className="text-sm">On Sale</span>
-              </label>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm mb-1">Cover Image</label>
-              <input
-                type="file"
-                name="coverImage"
-                accept="image/*"
-                onChange={onChange}
-                className="block w-full text-sm text-slate-600 file:mr-4 
-              file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm 
-              file:font-semibold file:bg-slate-100 file:text-slate-700
-               hover:file:bg-slate-200"
-              />
-
-              {/* Preview */}
-              {preview && (
-                <div className="mt-3">
-                  <p className="text-sm text-slate-500 mb-1">Preview:</p>
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="h-40 w-40 object-cover 
-                  rounded-lg border border-slate-200"
-                  />
-                </div>
-              )}
             </div>
           </div>
 
+          {/* Checkboxes */}
+          <div className="flex items-center gap-6">
+            <label className="inline-flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isFeatured"
+                checked={form.isFeatured}
+                onChange={onChange}
+                className="h-4 w-4 rounded border-[#c9b49a] accent-[#4a3728]"
+              />
+              <span className="text-[#4a3728] text-sm font-medium">Featured</span>
+            </label>
+
+            <label className="inline-flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isOnSale"
+                checked={form.isOnSale}
+                onChange={onChange}
+                className="h-4 w-4 rounded border-[#c9b49a] accent-[#4a3728]"
+              />
+              <span className="text-[#4a3728] text-sm font-medium">On Sale</span>
+            </label>
+          </div>
+
+          {/* Cover Image */}
+          <div className="flex flex-col gap-1.5">
+            <label className={labelClass}>Cover Image</label>
+
+            <div
+              onClick={() => document.getElementById("coverImageInput").click()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (!file) return;
+                setForm((p) => ({ ...p, coverImage: file }));
+                setPreview(URL.createObjectURL(file));
+              }}
+              onDragOver={(e) => e.preventDefault()}
+              className="relative w-full h-44 rounded-2xl border-2 border-dashed
+                border-[#c9b49a] bg-white flex flex-col items-center justify-center
+                cursor-pointer hover:border-[#a07850] hover:bg-[#fdf5ec]
+                transition duration-200 overflow-hidden group"
+            >
+              {preview ? (
+                <>
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100
+                    transition duration-200 flex items-center justify-center rounded-2xl">
+                    <span className="text-white text-sm font-medium">Change Image</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-10 h-10 text-[#c9b49a] mb-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                    />
+                  </svg>
+                  <p className="text-[#a07850] text-sm font-medium">
+                    Click or drag & drop to upload
+                  </p>
+                  <p className="text-[#c0a88e] text-xs mt-1">PNG, JPG, WEBP</p>
+                </>
+              )}
+            </div>
+
+            <input
+              id="coverImageInput"
+              type="file"
+              name="coverImage"
+              accept="image/*"
+              onChange={onChange}
+              className="hidden"
+            />
+          </div>
+
+          {/* Feedback Message */}
+          {message && (
+            <div
+              className={`text-sm px-4 py-3 rounded-xl font-medium ${
+                message.type === "success"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-600"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center 
-          whitespace-nowrap justify-center rounded-lg
-           bg-slate-900 text-white px-4 py-2 text-sm 
-           font-medium hover:bg-slate-800 disabled:opacity-60"
+            className="w-full py-3 rounded-xl bg-[#4a3728] text-[#FCF0E6]
+              font-semibold text-sm hover:bg-[#3a2a1e] active:scale-95
+              transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {submitting ? "Submitting..." : "Add Product"}
+            {submitting ? "Adding..." : "Add Product"}
           </button>
-
-          {message && <p className="text-sm mt-2">{message}</p>}
         </form>
       </div>
-    </>)
-}
+    </section>
+  );
+};
 
-export default AddProduct
+export default AddProduct;

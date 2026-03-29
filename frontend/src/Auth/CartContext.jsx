@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
+import { toast } from 'react-toastify';
 const CartContext = createContext()
 
 
@@ -45,7 +46,12 @@ export function CartProvider({ children }) {
         body: JSON.stringify({ productId, quantity })
       })
     const data = await res.json()
-    setCart(data.cart)
+    if (data.message != null) {
+      toast.error(data.message)
+    } else {
+
+      setCart(data.cart)
+    }
   }
 
 

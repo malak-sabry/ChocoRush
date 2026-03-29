@@ -22,22 +22,13 @@ const upload = multer({ storage: storage });
 router.post("/favourites", auth(null), async (req, res) => {
   const { productId } = req.body;
   const userId = req.user.id;
-    /*
-    it means go and find an entry in the favorites table that has same user and product 
-    found it? - delete it then return true
-    didn't find return false
-    */
   const isDeleted = await Favourites.findOneAndDelete({ userId, productId });
   if (isDeleted) {
-  
     return res.status(200).json({
       message: "product removed from favourites successfully!",
     });
   } else {
-    const newFavourite = new Favourites({
-      userId,
-      productId,
-    });
+    const newFavourite = new Favourites({ userId, productId });
     await newFavourite.save();
     return res.status(201).json({
       message: "product added to favourites successfully!",
@@ -48,12 +39,11 @@ router.post("/favourites", auth(null), async (req, res) => {
 
 router.get("/favourites", auth(null), async (req, res) => {
   const userId = req.user.id;
-  const favorites = await Favourites.find({userId}).populate('productId')
-
-  res.status(200).send(favorites)
+  const favorites = await Favourites.find({ userId }).populate("productId");
+  res.status(200).send(favorites);
 });
 
-//create product
+// create product
 router.post(
   "/",
   auth("admin"),
@@ -93,8 +83,9 @@ router.post(
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
+  }
 );
+
 // get all products
 router.get("/", async (req, res) => {
   try {
@@ -104,11 +95,12 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-//get specified product
+
+// get specified product
 router.get("/:id", async (req, res) => {
   const targetProduct = await Product.findById(req.params.id).populate(
     "category",
-    "name",
+    "name"
   );
   try {
     if (!targetProduct) {
@@ -120,24 +112,33 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//edit product
-router.put("/:id", async (req, res) => {
+// edit product — supports optional image update via multipart/form-data
+router.put("/:id", upload.single("coverImage"), async (req, res) => {
   try {
+    const updates = { ...req.body };
+
+    // If a new image was uploaded, overwrite coverImage
+    if (req.file?.filename) {
+      updates.coverImage = req.file.filename;
+    }
+
     const targetProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true },
+      updates,
+      { new: true }
     ).populate("category", "name");
+
     if (!targetProduct) {
       return res.status(400).json({ message: "product not found" });
     }
     return res
-      .status(201)
+      .status(200)
       .json({ message: "product updated successfully!", targetProduct });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 // delete product
 router.delete("/:id", async (req, res) => {
   try {
@@ -150,5 +151,6 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 // Export the router to be used in main app
 module.exports = router;

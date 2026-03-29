@@ -33,6 +33,7 @@ app.use("/products", require("./routes/products"));
 // All categoty-related routes will start with /categories
 app.use("/categories", require("./routes/categories"));
 app.use("/carts", require("./routes/carts"));
+app.use("/orders", require("./routes/orders"));
 app.use("/images", express.static("./images"));
 
 app.use("/admin", require("./routes/admin"));

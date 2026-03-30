@@ -23,23 +23,17 @@ const CategoryProducts = () => {
       try {
         setLoading(true);
 
-        // Fetch category
-        const catRes = await axios.get(`http://localhost:5000/categories/${categoryId}`);
-        console.log("Category response:", catRes.data);
+        const catRes = await axios.get(`/api/categories/${categoryId}`);
         setCategory(catRes.data.category || catRes.data);
 
-        // Fetch all products
-        const prodRes = await axios.get("http://localhost:5000/products");
-        console.log("All products:", prodRes.data);
+        const prodRes = await axios.get("/api/products");
 
-        // Filter safely by category
         const filtered = prodRes.data.filter(p => {
-          if (!p.category) return false; // skip products without category
+          if (!p.category) return false;
           const catId = typeof p.category === "object" ? p.category._id : p.category;
           return String(catId) === String(categoryId);
         });
 
-        console.log("Filtered products:", filtered);
         setProducts(filtered);
       } catch (error) {
         console.error("Error fetching category/products:", error);
@@ -55,7 +49,7 @@ const CategoryProducts = () => {
   useEffect(() => {
     const fetchFavourites = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/products/favourites", {
+        const res = await axios.get("/api/products/favourites", {
           withCredentials: true,
         });
         const favMap = {};
@@ -71,7 +65,6 @@ const CategoryProducts = () => {
     fetchFavourites();
   }, []);
 
-  // Require login for actions
   const requireAuth = (e, action) => {
     e.stopPropagation();
     if (!user) {
@@ -81,41 +74,44 @@ const CategoryProducts = () => {
     action();
   };
 
-  // Toggle favourite
   const toggleFav = async (e, productId) => {
     e.stopPropagation();
     setFavourites(prev => ({ ...prev, [productId]: !prev[productId] }));
     try {
       await axios.post(
-        "http://localhost:5000/products/favourites",
+        "/api/products/favourites",
         { productId },
         { withCredentials: true }
       );
     } catch {
-      // Revert on error
       setFavourites(prev => ({ ...prev, [productId]: !prev[productId] }));
     }
   };
 
-  if (loading) return <p className="p-10 text-center">Loading...</p>;
+  if (loading) return <p className="p-10 text-center text-sm sm:text-base">Loading...</p>;
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-3xl capitalize font-bold mb-6 text-[#4a3728]">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
+
+        {/* PAGE HEADING */}
+        <h1 className="text-xl sm:text-2xl md:text-3xl capitalize font-bold mb-4 sm:mb-6 text-[#4a3728]">
           {category?.name ? `${category.name} Chocolates` : "Category Chocolates"}
         </h1>
 
         {products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-[#9E7B65] gap-3">
-            <ImageOff size={48} className="opacity-30" />
-            <p className="text-base font-semibold">No products found in this category.</p>
+          <div className="flex flex-col items-center justify-center py-16 sm:py-24 text-[#9E7B65] gap-3">
+            <ImageOff size={40} className="opacity-30 sm:w-12 sm:h-12" />
+            <p className="text-sm sm:text-base font-semibold text-center px-4">
+              No products found in this category.
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          /* GRID: 2 cols on mobile → 3 on sm → 4 on md → 5 on lg */
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
             {products.map((product) => {
               const imageUrl = product.coverImage
-                ? `http://localhost:5000/images/${product.coverImage}`
+                ? `/api/images/${product.coverImage}`
                 : null;
               const discountedPrice = product.discountPercent > 0
                 ? (product.price * (1 - product.discountPercent / 100)).toFixed(2)
@@ -139,14 +135,15 @@ const CategoryProducts = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <ImageOff size={48} className="opacity-30" />
+                        <ImageOff size={36} className="opacity-30 sm:w-12 sm:h-12" />
                       </div>
                     )}
 
                     {/* DISCOUNT BADGE */}
                     {product.discountPercent > 0 && (
-                      <span className="absolute top-3 left-3 bg-[#7B3F1E]
-                        text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">
+                      <span className="absolute top-2 left-2 sm:top-3 sm:left-3
+                        bg-[#7B3F1E] text-white text-[9px] sm:text-[10px] font-bold
+                        px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full tracking-wide">
                         {product.discountPercent}%
                       </span>
                     )}
@@ -154,31 +151,39 @@ const CategoryProducts = () => {
                     {/* FAVOURITE BUTTON */}
                     <button
                       onClick={(e) => requireAuth(e, () => toggleFav(e, product._id))}
-                      className="absolute top-3 right-3 w-8 h-8 bg-white/60
-                        rounded-full flex items-center justify-center"
+                      className="absolute top-2 right-2 sm:top-3 sm:right-3
+                        w-7 h-7 sm:w-8 sm:h-8 bg-white/60 rounded-full
+                        flex items-center justify-center touch-manipulation"
+                      aria-label="Toggle favourite"
                     >
                       <Heart
-                        size={22}
+                        size={18}
                         fill={isFav ? "#7B3F1E" : "none"}
-                        className="text-[#7B3F1E]"
+                        className="text-[#7B3F1E] sm:w-[22px] sm:h-[22px]"
                       />
                     </button>
                   </div>
 
                   {/* PRODUCT INFO */}
-                  <div className="p-4 flex flex-col gap-2">
-                    <h3 className="text-sm font-bold line-clamp-2">{product.title}</h3>
-                    <p className="text-[11px] text-[#9E7B65] line-clamp-2">{product.description}</p>
+                  <div className="p-2.5 sm:p-3 md:p-4 flex flex-col gap-1.5 sm:gap-2">
+                    <h3 className="text-xs sm:text-sm font-bold line-clamp-2 leading-tight">
+                      {product.title}
+                    </h3>
+
+                    {/* Description hidden on very small screens, shown sm+ */}
+                    <p className="hidden sm:block text-[11px] text-[#9E7B65] line-clamp-2">
+                      {product.description}
+                    </p>
 
                     {/* PRICE & ADD TO CART */}
-                    <div className="flex justify-between items-end mt-1">
-                      <div>
+                    <div className="flex justify-between items-end mt-1 gap-1">
+                      <div className="min-w-0">
                         {discountedPrice && (
-                          <span className="text-[10px] line-through text-[#B89880]">
+                          <span className="text-[9px] sm:text-[10px] line-through text-[#B89880] block">
                             ${product.price}
                           </span>
                         )}
-                        <div className="text-lg font-extrabold">
+                        <div className="text-base sm:text-lg font-extrabold leading-tight">
                           ${discountedPrice ?? product.price}
                         </div>
                       </div>
@@ -198,28 +203,35 @@ const CategoryProducts = () => {
                           })
                         }
                         disabled={product.stock === 0}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] font-bold transition-all duration-200 active:scale-90 cursor-pointer
+                        className={`flex items-center gap-1 sm:gap-1.5
+                          px-2 sm:px-3 py-1.5 sm:py-2 rounded-full
+                          text-[10px] sm:text-[11px] font-bold
+                          transition-all duration-200 active:scale-90
+                          touch-manipulation shrink-0 cursor-pointer
                           ${product.stock === 0
                             ? "bg-[#e8ddd2] text-[#B89880] cursor-not-allowed"
                             : "bg-[#3B1F0D] text-white hover:bg-[#5a483e]"
                           }`}
+                        aria-label="Add to cart"
                       >
-                        <ShoppingCart size={14} /> Add
+                        <ShoppingCart size={12} className="sm:w-3.5 sm:h-3.5" />
+                        {/* Label hidden on xs to keep button compact */}
+                        <span className="hidden xs:inline sm:inline">Add</span>
                       </button>
                     </div>
 
                     {/* STOCK */}
                     <div className="flex items-center gap-1.5">
                       {product.stock === 0 ? (
-                        <span className="text-[10px] font-semibold text-red-400">
+                        <span className="text-[9px] sm:text-[10px] font-semibold text-red-400">
                           Out of Stock
                         </span>
                       ) : product.stock <= 5 ? (
-                        <span className="text-[10px] font-semibold text-orange-400">
+                        <span className="text-[9px] sm:text-[10px] font-semibold text-orange-400">
                           Only {product.stock} left!
                         </span>
                       ) : (
-                        <span className="text-[10px] font-semibold text-green-600">
+                        <span className="text-[9px] sm:text-[10px] font-semibold text-green-600">
                           In Stock ({product.stock})
                         </span>
                       )}

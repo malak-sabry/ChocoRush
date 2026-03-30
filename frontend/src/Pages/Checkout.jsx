@@ -1,9 +1,13 @@
 import Layout from "../Components/Layout";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useCart } from "../Auth/CartContext";
 
 const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const { cart, clearCart } = useCart();
 
   const [form, setForm] = useState({
     name: "",
@@ -29,11 +33,20 @@ const Checkout = () => {
     try {
       setSubmitting(true);
 
-      const res = await fetch("http://localhost:5000/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          items: cart.items.map(ci => ({
+            name: ci.product.title,   // أو ci.name لو موجود
+            price: ci.price,
+            quantity: ci.quantity,
+            image: ci.product.coverImage,
+            variant: ci.variant || ""
+          }))
+        }),
       });
 
       if (!res.ok) {
@@ -41,8 +54,10 @@ const Checkout = () => {
         throw new Error(err.message || "Request failed");
       }
 
+      clearCart();
       toast.info("Order received. Admin will confirm it shortly.");
       setForm({ name: "", email: "", phone: "", address: "", deliveryMethod: "cod" });
+      navigate("/profile");
     } catch (err) {
       toast.error(err.message || "Something went wrong. Please try again.");
     } finally {

@@ -24,7 +24,7 @@ const AddProduct = () => {
   useEffect(() => {
     const loadCats = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/categories", { withCredentials: true });
+        const res = await axios.get("/api/categories", { withCredentials: true });
         setCategories(Array.isArray(res.data) ? res.data : (res.data?.categories || []));
       } catch (error) {
         console.error("Failed to load categories:", error);
@@ -76,7 +76,7 @@ const AddProduct = () => {
 
     try {
       setSubmitting(true);
-      const res = await axios.post("http://localhost:5000/products", fd, {
+      const res = await axios.post("/products", fd, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -338,11 +338,10 @@ const AddProduct = () => {
           {/* Feedback Message */}
           {message && (
             <div
-              className={`text-sm px-4 py-3 rounded-xl font-medium ${
-                message.type === "success"
+              className={`text-sm px-4 py-3 rounded-xl font-medium ${message.type === "success"
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-600"
-              }`}
+                }`}
             >
               {message.text}
             </div>

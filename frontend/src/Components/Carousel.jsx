@@ -12,15 +12,15 @@ const Carousel = () => {
   const [animating, setAnimating] = useState(false);
   const timeoutRef = useRef(null);
 
-  const CARD_WIDTH = 420;
-  const CENTER_WIDTH = 440;
+  const CARD_WIDTH = 320;
+  const CENTER_WIDTH = 320;
   const GAP = 40;
   const sideOffset = CENTER_WIDTH / 2 + GAP + CARD_WIDTH / 2;
 
 useEffect(() => {
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("/api/products");
       setProducts(res.data.slice(0, 4)); 
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -74,7 +74,8 @@ useEffect(() => {
   return (
     <>
       {/* Carousel */}
-      <div className="relative flex justify-center items-center px-6 overflow-hidden">
+      <div className="mx-5 relative flex justify-center
+       items-center px-6 overflow-hidden">
         <div className="relative flex justify-center items-center w-full h-[360px]">
           {products.map((product, i) => (
             <div
@@ -85,7 +86,7 @@ useEffect(() => {
                 transition: "transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease, width 0.4s ease",
                 ...getCardStyle(i),
               }}
-              className={`flex flex-col items-center text-center shadow-lg rounded-full cursor-pointer select-none ${
+              className={`flex flex-col items-center text-center shadow-lg rounded-full  cursor-pointer select-none ${
                 isCenter(i) ? "bg-[#1C120A] text-[#E8DED3] py-14 px-8" : "bg-[#968C82] text-[#E8DED3] py-10 px-6"
               }`}
             >

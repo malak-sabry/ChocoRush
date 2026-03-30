@@ -5,7 +5,7 @@ const Categories = () => {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const BASE_URL = "http://localhost:5000"
+  const BASE_URL = "/api"
 
   useEffect(() => {
     fetch(`${BASE_URL}/categories`)

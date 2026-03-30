@@ -12,8 +12,19 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "deleted"],
       default: "pending",
     },
+
+    items: [
+      {
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+        image: { type: String },
+        variant: { type: String },
+      },
+    ],
   },
   { timestamps: true }
+  
 );
 
 module.exports = mongoose.model("Order", orderSchema);

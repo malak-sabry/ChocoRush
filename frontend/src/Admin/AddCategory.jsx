@@ -37,7 +37,7 @@ const AddCategory = () => {
     try {
       setLoading(true);
       setMessage(null);
-      await axios.post("http://localhost:5000/categories", formData, {
+      await axios.post("/api/categories", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setMessage({ type: "success", text: "Category added successfully!" });

@@ -36,31 +36,29 @@ export default function About() {
   const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <>
     <Layout>
       <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet"
       />
 
-      <div className="min-h-screen px-4 py-16 bg-[#E8DED3] font-serif mb-4">
-        <div className="max-w-4xl mx-auto flex flex-col gap-16">
+      <div className="min-h-screen px-4 sm:px-6 py-10 sm:py-16 bg-[#E8DED3] font-serif mb-4">
+        <div className="max-w-4xl mx-auto flex flex-col gap-12 sm:gap-16">
 
           {/* ── Our Story Section ── */}
-          {/* Card background: #EEE3CE */}
-          <section className="relative rounded-3xl p-10 overflow-hidden bg-[#E3D0B5] border border-[#E4D1B6] shadow-md">
+          <section className="relative rounded-3xl p-6 sm:p-10 overflow-hidden bg-[#E3D0B5] border border-[#E4D1B6] shadow-md">
 
-            {/* Decorative corner accent using #E4D1B6 */}
+            {/* Decorative corner accent */}
             <div className="absolute top-0 left-0 w-24 h-24 rounded-br-full opacity-40 pointer-events-none bg-[#E4D1B6]" />
 
-            <div className="relative flex flex-wrap items-start gap-10">
+            <div className="relative flex flex-col sm:flex-row items-start gap-8 sm:gap-10">
 
               {/* Text */}
-              <div className="flex-1 min-w-[280px]">
+              <div className="flex-1 min-w-0">
                 <p className="text-xs uppercase tracking-[0.15em] mb-2 text-[#7a5c3a]">
                   Our story
                 </p>
-                <h2 className="mb-5 font-semibold leading-none text-4xl text-[#2a1206] tracking-tight">
+                <h2 className="mb-5 font-semibold leading-none text-3xl sm:text-4xl text-[#2a1206] tracking-tight">
                   ChocoRush
                 </h2>
                 <p className="text-sm mb-8 text-[#4a2a10] leading-[1.85]">
@@ -79,14 +77,13 @@ export default function About() {
               </div>
 
               {/* Stacked image cards */}
-              <div className="relative flex-shrink-0 w-[280px] h-[260px]">
-                {/* Back card: darkest tone */}
-                <div className="absolute top-0 right-0 w-48 h-48 rounded-2xl rotate-[8deg] bg-[#4a2a10] shadow-xl" />
-                {/* Mid card: #E4D1B6 */}
-                <div className="absolute top-5 right-5 w-48 h-48 rounded-2xl
-                 rotate-[3deg] bg-[#BD9971] shadow-lg" />
+              <div className="relative flex-shrink-0 w-full sm:w-[280px] h-[200px] sm:h-[260px]">
+                {/* Back card */}
+                <div className="absolute top-0 right-0 w-36 h-36 sm:w-48 sm:h-48 rounded-2xl rotate-[8deg] bg-[#4a2a10] shadow-xl" />
+                {/* Mid card */}
+                <div className="absolute top-4 right-4 sm:top-5 sm:right-5 w-36 h-36 sm:w-48 sm:h-48 rounded-2xl rotate-[3deg] bg-[#BD9971] shadow-lg" />
                 {/* Front card with image */}
-                <div className="absolute top-10 right-10 w-48 h-48 rounded-2xl overflow-hidden shadow-2xl">
+                <div className="absolute top-8 right-8 sm:top-10 sm:right-10 w-36 h-36 sm:w-48 sm:h-48 rounded-2xl overflow-hidden shadow-2xl">
                   <img
                     src="https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=400&h=400&fit=crop&crop=center"
                     alt="Chocolate tower"
@@ -94,16 +91,17 @@ export default function About() {
                   />
                 </div>
               </div>
+
             </div>
           </section>
 
           {/* ── FAQs Section ── */}
           <section>
-            <div className="text-center mb-10">
+            <div className="text-center mb-8 sm:mb-10">
               <p className="text-xs uppercase tracking-[0.15em] mb-2 text-[#7a5c3a]">
                 Got questions?
               </p>
-              <h2 className="font-semibold text-4xl text-[#2a1206] tracking-tight">
+              <h2 className="font-semibold text-3xl sm:text-4xl text-[#2a1206] tracking-tight">
                 F&amp;Qs
               </h2>
               <div className="w-10 h-0.5 rounded-full mx-auto mt-3 bg-[#7a5c3a]" />
@@ -119,10 +117,10 @@ export default function About() {
                 >
                   <button
                     onClick={() => toggle(i)}
-                    className="w-full flex items-center justify-between px-6 py-4 text-left bg-transparent border-none cursor-pointer"
+                    className="w-full flex items-center justify-between px-4 sm:px-6 py-4 text-left bg-transparent border-none cursor-pointer"
                   >
                     <span
-                      className={`text-base tracking-wide ${
+                      className={`text-sm sm:text-base tracking-wide ${
                         openIndex === i ? "text-[#2a1206]" : "text-[#4a2a10]"
                       }`}
                     >
@@ -146,7 +144,7 @@ export default function About() {
                       openIndex === i ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
-                    <p className="px-6 pb-5 text-sm leading-[1.7] text-[#2a1206]">
+                    <p className="px-4 sm:px-6 pb-5 text-sm leading-[1.7] text-[#2a1206]">
                       {faq.answer}
                     </p>
                   </div>
@@ -156,9 +154,7 @@ export default function About() {
           </section>
 
         </div>
-
       </div>
-      </Layout>
-    </>
+    </Layout>
   );
 }

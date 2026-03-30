@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from './Auth/ProtectedRoute.jsx';
 
 // Global CSS
 import "./index.css";
@@ -35,9 +36,8 @@ import Checkout from "./Pages/Checkout.jsx";
 import Orders from "./Admin/Orders.jsx";
 import UserProfile from "./Pages/UserProfile.jsx";
 import CategoryProducts from "./Pages/CategoryProducts.jsx";
+import NotFound from "./Pages/NotFound.jsx";
 
-
-// Root render
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter
@@ -46,10 +46,9 @@ createRoot(document.getElementById("root")).render(
         v7_relativeSplatPath: true,
       }}
     >
-      {/* Toast notifications for user feedback */}
       <ToastContainer
         position="top-right"
-        autoClose={2000}  // disappears after 2 seconds
+        autoClose={2000}
         hideProgressBar={true}
         newestOnTop={false}
         theme='dark'
@@ -58,24 +57,34 @@ createRoot(document.getElementById("root")).render(
         draggable
       />
 
-      {/* Context providers for authentication and cart state */}
       <AuthProvider>
         <CartProvider>
           <Routes>
             {/* Public Pages */}
             <Route path="/" element={<HomePage />} />
-            <Route path="/shop" element={<ProductGrid />} />
-            <Route path="/shop/:id" element={<ProductPage />} />
-            <Route path="/shop/favorites" element={<Favourites />} />
-            <Route path="/checkout" element={<Checkout />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<UserProfile/>} />
-             <Route path="/category/:categoryId" element={<CategoryProducts />} />
+            <Route path="/category/:categoryId" element={<CategoryProducts />} />
 
-            {/* Admin Pages - Nested under AdminLayout */}
+            {/* Shop Pages */}
+            <Route path="/shop" element={<ProductGrid />} />
+            {/* favorites قبل :id عشان ميتعرفش كـ parameter */}
+            <Route path="/shop/favorites" element={
+              <ProtectedRoute><Favourites /></ProtectedRoute>
+            } />
+            <Route path="/shop/:id" element={<ProductPage />} />
+
+            {/* Protected Pages */}
+            <Route path="/checkout" element={
+              <ProtectedRoute><Checkout /></ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute><UserProfile /></ProtectedRoute>
+            } />
+
+            {/* Admin Pages */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="add-product" element={<AddProduct />} />
               <Route path="edit-product/:id" element={<UpdateProduct />} />
@@ -85,6 +94,9 @@ createRoot(document.getElementById("root")).render(
               <Route path="categories/:id" element={<UpdateCategory />} />
               <Route path="orders" element={<Orders />} />
             </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </CartProvider>
       </AuthProvider>

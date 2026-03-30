@@ -28,7 +28,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5000/orders", {
+      const res = await fetch("/api/orders", {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch orders");
@@ -48,7 +48,7 @@ const Orders = () => {
   const confirmOrder = async (id) => {
     setActionId(id);
     try {
-      const res = await fetch(`http://localhost:5000/orders/${id}/confirm`, {
+      const res = await fetch(`/api/orders/${id}/confirm`, {
         method: "PUT",
         credentials: "include",
       });
@@ -68,7 +68,7 @@ const Orders = () => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     setActionId(id);
     try {
-      const res = await fetch(`http://localhost:5000/orders/${id}`, {
+      const res = await fetch(`/api/orders/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

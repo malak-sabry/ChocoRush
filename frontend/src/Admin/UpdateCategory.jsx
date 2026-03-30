@@ -11,7 +11,7 @@ const UpdateCategory = () => {
   const [message, setMessage] = useState(null)
   const [newImage, setNewImage] = useState(null)
   const [preview, setPreview] = useState(null)
-  const BASE_URL = "http://localhost:5000"
+  const BASE_URL = "/api"
 
   useEffect(() => {
     fetch(`${BASE_URL}/categories/${id}`)

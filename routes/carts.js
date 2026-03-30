@@ -5,7 +5,7 @@ const Cart = require("../models/CartSchema");
 const Product = require("../models/ProductSchema");
 const { cookieAuth } = require("../auth/middleware");
 
-// ✅ GET CART
+// GET CART
 router.get("/", cookieAuth, async (req, res) => {
   try {
     let cart = await Cart.findOne({ user: req.user.id }).populate({
@@ -33,6 +33,8 @@ router.get("/", cookieAuth, async (req, res) => {
     });
   }
 });
+
+// ADD TO CART
 router.post("/", cookieAuth, async (req, res) => {
   try {
     const { productId } = req.body;
@@ -73,12 +75,11 @@ router.post("/", cookieAuth, async (req, res) => {
 
     return res.json({ success: true, cart });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error adding to cart", error: error.message });
+    res.status(500).json({ message: "Error adding to cart", error: error.message });
   }
 });
-// ✅ UPDATE CART
+
+// UPDATE CART
 router.put("/", cookieAuth, async (req, res) => {
   try {
     const { quantity, productId } = req.body;
@@ -120,12 +121,41 @@ router.put("/", cookieAuth, async (req, res) => {
 
     res.json({ success: true, cart });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating cart", error: error.message });
+    res.status(500).json({ message: "Error updating cart", error: error.message });
   }
 });
 
+// CLEAR CART — لازم يكون قبل /:productId
+router.delete("/", cookieAuth, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user.id }).populate({
+      path: "items.product",
+      select: "stock",
+    });
+
+    if (!cart) {
+      return res.status(400).json({ message: "Cart not found." });
+    }
+
+    // رجّع الـ stock لكل product
+    for (const item of cart.items) {
+      if (item.product) {
+        await Product.findByIdAndUpdate(item.product._id, {
+          $inc: { stock: item.quantity },
+        });
+      }
+    }
+
+    cart.items = [];
+    await cart.save();
+
+    res.json({ success: true, cart });
+  } catch (error) {
+    res.status(500).json({ message: "Error clearing cart", error: error.message });
+  }
+});
+
+// REMOVE ITEM FROM CART
 router.delete("/:productId", cookieAuth, async (req, res) => {
   try {
     const { productId } = req.params;
@@ -161,9 +191,8 @@ router.delete("/:productId", cookieAuth, async (req, res) => {
 
     res.json({ success: true, cart });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error removing item", error: error.message });
+    res.status(500).json({ message: "Error removing item", error: error.message });
   }
 });
+
 module.exports = router;

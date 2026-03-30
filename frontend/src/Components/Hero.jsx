@@ -6,7 +6,7 @@ const Hero = () => {
   
 
   return (
-    <section className="relative min-h-screen">
+    <section className="relative md:min-h-screen">
       <HeroImg />
 <Carousel/>
       

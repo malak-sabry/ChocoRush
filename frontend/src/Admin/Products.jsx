@@ -13,7 +13,7 @@ function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/admin/products", {
+        const res = await fetch("/api/admin/products", {
           method: 'GET',
           credentials: "include",
           headers: { 'Content-Type': "application/json" }
@@ -106,7 +106,7 @@ function Products() {
               {/* Image */}
               <div className="aspect-square overflow-hidden bg-[#e8d5c4]">
                 <img
-                  src={`http://localhost:5000/images/${product.coverImage}`}
+                  src={`/api/images/${product.coverImage}`}
                   alt={product.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />

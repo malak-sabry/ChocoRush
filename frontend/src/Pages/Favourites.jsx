@@ -3,14 +3,18 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from './../Components/Layout';
+import { useCart } from '../Auth/CartContext';
+import { toast } from "react-toastify";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "/api";
 
 const Favourites = () => {
   const [favourites, setFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addingToCart, setAddingToCart] = useState({});
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchFavourites = async () => {
@@ -18,7 +22,6 @@ const Favourites = () => {
         const res = await axios.get(`${API_BASE}/products/favourites`, {
           withCredentials: true,
         });
-        // Filter out any favourites with null productId
         setFavourites(res.data.filter(item => item.productId));
       } catch (err) {
         setError("Failed to load favourite items");
@@ -31,10 +34,8 @@ const Favourites = () => {
   }, []);
 
   const handleRemove = async (productId) => {
-    // Optimistic UI update
     const previous = favourites;
     setFavourites(prev => prev.filter(item => item.productId._id !== productId));
-
     try {
       await axios.post(
         `${API_BASE}/products/favourites`,
@@ -43,8 +44,19 @@ const Favourites = () => {
       );
     } catch (err) {
       console.error("Failed to remove favourite:", err.message);
-      // Revert to previous state on failure
       setFavourites(previous);
+    }
+  };
+
+  const handleAddToCart = async (e, productId) => {
+    e.stopPropagation();
+    setAddingToCart(prev => ({ ...prev, [productId]: true }));
+    try {
+      await addToCart(productId);
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [productId]: false }));
     }
   };
 
@@ -53,10 +65,11 @@ const Favourites = () => {
 
   return (
     <Layout>
-      <div className="w-[70%] mx-auto pt-10 mb-4">
+      <div className="w-[92%] sm:w-[80%] lg:w-[70%] mx-auto pt-10 mb-4">
         <div className="space-y-6">
+
           {/* Header */}
-          <div className="flex justify-between">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <h3 className="
               text-2xl font-semibold tracking-wide text-black
               relative inline-block
@@ -71,7 +84,7 @@ const Favourites = () => {
               to="/shop"
               className="
                 inline-flex items-center justify-center gap-2
-                px-6 py-3 w-fit
+                px-5 py-2.5 w-fit
                 rounded-full
                 bg-[#4F342F] text-[#E8DED3]
                 text-sm font-semibold
@@ -98,41 +111,83 @@ const Favourites = () => {
               item.productId && (
                 <div
                   key={item._id}
-                  className="flex mb-6 items-center gap-6 p-5 border rounded-xl
-                  bg-[#E3D0B5] shadow-sm hover:shadow-md transition cursor-pointer"
+                  className="flex items-center gap-3 sm:gap-6 p-4 sm:p-5 border rounded-xl
+                  bg-[#E3D0B5] shadow-sm hover:shadow-md transition cursor-pointer mb-6"
                   onClick={() => navigate(`/shop/${item.productId._id}`)}
                 >
+                  {/* Image */}
                   <img
                     src={`${API_BASE}/images/${item.productId.coverImage}`}
                     alt={item.productId.title}
-                    className="w-24 h-24 object-cover rounded-md border"
+                    className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-md border shrink-0"
                   />
 
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold text-gray-800">
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-sm sm:text-lg font-semibold text-gray-800 truncate">
                       {item.productId.title}
                     </h2>
-                    <p className="mt-1 text-[#7B3C34] font-bold text-base">
+                    <p className="mt-1 text-[#7B3C34] font-bold text-sm sm:text-base">
                       ${item.productId.price}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+
+                    {/* Heart / Remove */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleRemove(item.productId._id); }}
-                      className="p-2 transition active:scale-90"
+                      className="group p-2 transition active:scale-90"
                       title="Remove from favourites"
                     >
-                      <Heart size={25} fill="#4F342F" className="text-[#4F342F]" />
+                      <Heart
+                        size={22}
+                        fill="#7B3C34"
+                        stroke="#7B3C34"
+                        className="cursor-pointer
+                        
+                          group-hover:fill-[#4F342F]
+                          group-hover:stroke-[#4F342F]
+                        
+                      
+                        "
+                      />
                     </button>
-                    <button className="p-2 rounded-full bg-[#4F342F] shadow-sm transition-all duration-200">
-                      <ShoppingCart className="text-[#E8DED3] w-4 h-4" />
+
+                    {/* Add to Cart */}
+                    <button
+                      onClick={(e) => {
+                        handleAddToCart(e, item.productId._id);
+                        toast.success("Added To Cart Successfully!");
+                      }}
+                      disabled={addingToCart[item.productId._id]}
+                      className=" cursor-pointer
+                        flex items-center gap-1.5
+                        px-3 py-2 rounded-full
+                        bg-[#4F342F] text-[#E8DED3]
+                        text-xs font-semibold
+                        shadow-sm
+                        hover:bg-[#7B3C34]
+                        hover:shadow-md
+                        active:scale-95
+                        disabled:opacity-60 disabled:cursor-not-allowed
+                        transition-all duration-200
+                      "
+                      title="Add to cart"
+                    >
+                      <ShoppingCart className="w-4 h-4 cursor-pointer" />
+                      <span className="hidden sm:inline">
+                        {addingToCart[item.productId._id] ? "Adding..." : "Add"}
+                      </span>
                     </button>
+
                   </div>
                 </div>
               )
             ))}
           </div>
+
         </div>
       </div>
     </Layout>

@@ -6,13 +6,23 @@ const { cookieAuth } = require("../auth/middleware");
 // POST /orders — place a new order (public)
 router.post("/", async (req, res) => {
   try {
-    const { name, email, phone, address, deliveryMethod } = req.body;
+    const { name, email, phone, address, deliveryMethod, items } = req.body;
 
     if (!name || !email || !phone || !address) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    const order = await Order.create({ name, email, phone, address, deliveryMethod });
+    const order = await Order.create({
+      name,
+      email,
+      phone,
+      address,
+      deliveryMethod,
+      status: "pending",
+
+      items: items || [], // 🔥 أهم سطر
+    });
+
     res.status(201).json({ message: "Order placed successfully.", order });
   } catch (err) {
     res.status(500).json({ message: "Server error.", error: err.message });

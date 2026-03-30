@@ -6,11 +6,11 @@ import { Loader2, AlertTriangle, ImageOff, Star, Heart, ShoppingCart, Check } fr
 import { useCart } from "../Auth/CartContext";
 import { toast } from "react-toastify";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "/api";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { addToCart } = useCart(); // Cart context
+  const { addToCart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,6 @@ export default function ProductPage() {
   const [added, setAdded] = useState(false);
   const [isFavourited, setIsFavourited] = useState(false);
 
-  // Fetch product and favourite status
   useEffect(() => {
     if (!id) {
       setError("No product ID found in URL.");
@@ -34,8 +33,6 @@ export default function ProductPage() {
       .get(`${API_BASE}/products/${id}`)
       .then(({ data }) => {
         setProduct(data.targetProduct);
-
-        // Check if favourited
         axios
           .get(`${API_BASE}/products/favourites`, { withCredentials: true })
           .then(({ data: favData }) => {
@@ -52,14 +49,13 @@ export default function ProductPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Add to cart handler
   const handleAddToCart = async () => {
     if (product.stock === 0) {
       toast.error("Product is out of stock!");
       return;
     }
     try {
-      await addToCart(product._id, qty); // Add to cart via context
+      await addToCart(product._id, qty);
       setAdded(true);
       toast.success("Added to cart successfully!");
       setTimeout(() => setAdded(false), 2000);
@@ -69,7 +65,6 @@ export default function ProductPage() {
     }
   };
 
-  // Toggle favourite
   const handleToggleFavourite = async () => {
     const previous = isFavourited;
     setIsFavourited(!previous);
@@ -85,7 +80,6 @@ export default function ProductPage() {
     }
   };
 
-  // ── Loading
   if (loading)
     return (
       <div className="flex min-h-screen items-center justify-center bg-amber-50">
@@ -98,10 +92,9 @@ export default function ProductPage() {
       </div>
     );
 
-  // ── Error
   if (error)
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-amber-50 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-amber-50 text-center px-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <AlertTriangle className="h-8 w-8 text-red-500" />
         </div>
@@ -117,7 +110,6 @@ export default function ProductPage() {
 
   if (!product) return null;
 
-  // ── Helpers
   const finalPrice = product.discountPercent
     ? (product.price - (product.price * product.discountPercent) / 100).toFixed(2)
     : null;
@@ -147,7 +139,7 @@ export default function ProductPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen py-10 px-4">
+      <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-4">
         <div className="mx-auto max-w-5xl">
 
           {/* Card */}
@@ -155,14 +147,14 @@ export default function ProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2">
 
               {/* Left: Image */}
-              <div className="relative flex min-h-[360px] items-center justify-center bg-[#ece8d9] p-10">
+              <div className="relative flex min-h-[260px] sm:min-h-[360px] items-center justify-center bg-[#ece8d9] p-6 sm:p-10">
                 {product.discountPercent > 0 && (
-                  <div className="absolute left-4 top-4 z-10 rounded-full bg-red-700 px-3 py-1 text-xs font-bold text-white shadow">
+                  <div className="absolute left-3 top-3 sm:left-4 sm:top-4 z-10 rounded-full bg-red-700 px-2.5 py-1 text-xs font-bold text-white shadow">
                     -{product.discountPercent}% OFF
                   </div>
                 )}
                 {product.isFeatured && (
-                  <div className="absolute right-4 top-4 z-10 rounded-full bg-amber-800 px-3 py-1 text-xs font-bold text-white shadow">
+                  <div className="absolute right-3 top-3 sm:right-4 sm:top-4 z-10 rounded-full bg-amber-800 px-2.5 py-1 text-xs font-bold text-white shadow">
                     ★ Featured
                   </div>
                 )}
@@ -173,16 +165,16 @@ export default function ProductPage() {
                     className="h-full rounded-2xl w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-64 w-64 flex-col items-center justify-center rounded-xl bg-amber-100 text-amber-400">
-                    <ImageOff className="h-16 w-16" />
+                  <div className="flex h-48 w-48 sm:h-64 sm:w-64 flex-col items-center justify-center rounded-xl bg-amber-100 text-amber-400">
+                    <ImageOff className="h-12 w-12 sm:h-16 sm:w-16" />
                     <span className="mt-2 text-sm">No image</span>
                   </div>
                 )}
               </div>
 
               {/* Right: Details */}
-              <div className="flex flex-col justify-between p-8 md:p-10">
-                <div className="space-y-5">
+              <div className="flex flex-col justify-between p-5 sm:p-8 md:p-10">
+                <div className="space-y-4 sm:space-y-5">
 
                   {/* Brand + Category */}
                   <div className="flex flex-wrap items-center gap-2">
@@ -197,7 +189,7 @@ export default function ProductPage() {
                   </div>
 
                   {/* Title */}
-                  <h1 className="text-2xl font-bold leading-tight text-stone-900">
+                  <h1 className="text-xl sm:text-2xl font-bold leading-tight text-stone-900">
                     {product.title}
                   </h1>
 
@@ -216,11 +208,11 @@ export default function ProductPage() {
 
                   {/* Price */}
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-extrabold text-amber-900">
+                    <span className="text-2xl sm:text-3xl font-extrabold text-amber-900">
                       ${finalPrice ?? Number(product.price).toFixed(2)}
                     </span>
                     {finalPrice && (
-                      <span className="text-lg text-stone-400 line-through">
+                      <span className="text-base sm:text-lg text-stone-400 line-through">
                         ${Number(product.price).toFixed(2)}
                       </span>
                     )}
@@ -238,7 +230,7 @@ export default function ProductPage() {
                 </div>
 
                 {/* Qty + Buttons */}
-                <div className="mt-8 space-y-4">
+                <div className="mt-6 sm:mt-8 space-y-4">
                   <div className="flex items-center gap-3">
                     <label className="text-sm font-medium text-stone-600">Qty</label>
                     <div className="flex items-center overflow-hidden rounded-lg border border-amber-200 bg-amber-50">
@@ -249,7 +241,6 @@ export default function ProductPage() {
                       >
                         −
                       </button>
-
                       <input
                         type="number"
                         value={qty}
@@ -259,7 +250,6 @@ export default function ProductPage() {
                         }}
                         className="w-12 text-center border-x border-amber-200 bg-amber-50 text-sm font-semibold text-stone-800 outline-none"
                       />
-
                       <button
                         type="button"
                         onClick={() => setQty((q) => (q < product.stock ? q + 1 : product.stock))}
@@ -282,7 +272,10 @@ export default function ProductPage() {
                           : "bg-amber-800 text-white hover:bg-amber-900 hover:shadow-md active:scale-95"
                         }`}
                     >
-                      {added ? <><Check className="h-4 w-4" /> Added to Cart</> : <><ShoppingCart className="h-4 w-4" /> Add to Cart</>}
+                      {added
+                        ? <><Check className="h-4 w-4" /> Added to Cart</>
+                        : <><ShoppingCart className="h-4 w-4" /> Add to Cart</>
+                      }
                     </button>
 
                     <button
@@ -307,12 +300,12 @@ export default function ProductPage() {
 
             {/* Tabs */}
             <div className="border-t border-amber-100">
-              <div className="flex gap-1 px-8 pt-4">
+              <div className="flex gap-1 px-4 sm:px-8 pt-4 overflow-x-auto">
                 {["description", "details"].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`rounded-t-lg px-5 py-2.5 text-sm font-semibold capitalize transition
+                    className={`whitespace-nowrap rounded-t-lg px-4 sm:px-5 py-2.5 text-sm font-semibold capitalize transition
                       ${activeTab === tab
                         ? "border-b-2 border-amber-800 bg-amber-50 text-amber-900"
                         : "text-stone-400 hover:text-stone-700"
@@ -323,11 +316,11 @@ export default function ProductPage() {
                 ))}
               </div>
 
-              <div className="px-8 py-6 text-sm leading-relaxed text-stone-600">
+              <div className="px-4 sm:px-8 py-5 sm:py-6 text-sm leading-relaxed text-stone-600">
                 {activeTab === "description" ? (
                   <p>{product.description || "No description provided."}</p>
                 ) : (
-                  <dl className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
+                  <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 sm:gap-x-8 gap-y-4">
                     {[
                       ["Title", product.title],
                       ["Brand", product.brand],

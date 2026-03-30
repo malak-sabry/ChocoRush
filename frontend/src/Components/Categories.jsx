@@ -8,7 +8,7 @@ const Categories = () => {
 
   const getCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/categories");
+      const response = await axios.get("/api/categories");
       setCategories(response.data);
     } catch (err) {
       console.error(err);
@@ -44,7 +44,7 @@ const Categories = () => {
             <Link key={cat._id} to={`/category/${cat._id}`}>
               <div className="card flex flex-col items-center bg-[#FCF0E6] rounded-2xl shadow-md p-4 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img
-                  src={`http://localhost:5000/images/${cat.coverImage}`}
+                  src={`/api/images/${cat.coverImage}`}
                   alt={cat.name}
                   className="w-20 h-20 mb-3 rounded-full object-cover"
                 />

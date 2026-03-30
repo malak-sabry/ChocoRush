@@ -41,7 +41,7 @@ export default function ProductPage() {
             );
             setIsFavourited(alreadyFavourited);
           })
-          .catch(() => {});
+          .catch(() => { });
       })
       .catch((err) =>
         setError(err.response?.data?.message || "Failed to load product.")
@@ -120,20 +120,20 @@ export default function ProductPage() {
   const stockColor = stockOut
     ? "bg-red-100 text-red-700"
     : stockLow
-    ? "bg-yellow-100 text-yellow-800"
-    : "bg-amber-100 text-amber-800";
+      ? "bg-yellow-100 text-yellow-800"
+      : "bg-amber-100 text-amber-800";
 
   const stockDot = stockOut
     ? "bg-red-500"
     : stockLow
-    ? "bg-yellow-500"
-    : "bg-amber-600";
+      ? "bg-yellow-500"
+      : "bg-amber-600";
 
   const stockLabel = stockOut
     ? "Out of stock"
     : stockLow
-    ? `Only ${product.stock} left`
-    : "In stock";
+      ? `Only ${product.stock} left`
+      : "In stock";
 
   const rating = 4.3;
 
@@ -162,7 +162,7 @@ export default function ProductPage() {
                   <img
                     src={`${API_BASE}/images/${product.coverImage}`}
                     alt={product.title}
-                    className="h-full rounded-2xl w-full object-cover"
+                    className="h-65 rounded-2xl w-65 object-cover"
                   />
                 ) : (
                   <div className="flex h-48 w-48 sm:h-64 sm:w-64 flex-col items-center justify-center rounded-xl bg-amber-100 text-amber-400">
@@ -268,8 +268,8 @@ export default function ProductPage() {
                         ${stockOut
                           ? "cursor-not-allowed bg-stone-200 text-stone-400"
                           : added
-                          ? "scale-95 bg-amber-600 text-white"
-                          : "bg-amber-800 text-white hover:bg-amber-900 hover:shadow-md active:scale-95"
+                            ? "scale-95 bg-amber-600 text-white"
+                            : "bg-amber-800 text-white hover:bg-amber-900 hover:shadow-md active:scale-95"
                         }`}
                     >
                       {added

@@ -127,7 +127,7 @@ useEffect(() => {
                     ? <span className="text-red-400">Out of Stock</span>
                     : product.stock <= 5
                       ? <span className="text-orange-400">Only {product.stock} left!</span>
-                      : <span className="text-green-600">In Stock ({product.stock})</span>
+                      : <span className="text-wwhite">In Stock ({product.stock})</span>
                   }
                 </div>
               )}

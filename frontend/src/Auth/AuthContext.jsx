@@ -134,7 +134,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
     }
-    window.location.href = "http://localhost:5173/";
+    window.location.href = "/";
   };
 
   /**

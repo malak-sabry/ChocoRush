@@ -4,7 +4,7 @@ import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 import { useCart } from "../Auth/CartContext";
 import { toast } from "react-toastify";
-
+import { Oval } from 'react-loader-spinner';
 const Carousel = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
@@ -69,7 +69,20 @@ useEffect(() => {
 
   const isCenter = (i) => i === activeIndex;
 
-  if (products.length === 0) return <p className="text-center py-10">Loading...</p>;
+
+if (products.length === 0) {
+  return (
+    <div className="flex justify-center items-center h-[60vh]">
+      <Oval 
+        height={80} 
+        width={80} 
+        color="#4fa94d" 
+        secondaryColor="#4fa94d" 
+        strokeWidth={5}
+      />
+    </div>
+  );
+}
 
   return (
     <>

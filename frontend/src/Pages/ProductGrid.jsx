@@ -78,7 +78,7 @@ function ProductGrid() {
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8 py-5 sm:py-8">
 
           {/* ── TOOLBAR: search + categories ── */}
-          <div className="mt-17 mb-6 sm:mb-8 space-y-3">
+          <div className=" mb-6 sm:mb-8 space-y-3">
 
             {/* Search */}
             <input

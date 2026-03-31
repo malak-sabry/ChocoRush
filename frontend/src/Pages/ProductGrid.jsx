@@ -74,11 +74,11 @@ function ProductGrid() {
 
   return (
     <Layout>
-      <section className="min-h-screen">
+      <section className="min-h-screen ">
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8 py-5 sm:py-8">
 
           {/* ── TOOLBAR: search + categories ── */}
-          <div className="mb-6 sm:mb-8 space-y-3">
+          <div className="mt-17 mb-6 sm:mb-8 space-y-3">
 
             {/* Search */}
             <input
@@ -108,7 +108,7 @@ function ProductGrid() {
                 <button
                   key={cat._id}
                   onClick={() => setSelectedCategory(cat._id)}
-                  className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold
+                  className={`capitalize flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold
                     transition-colors duration-200 whitespace-nowrap
                     ${selectedCategory === cat._id
                       ? "bg-[#3B1F0D] text-white shadow"

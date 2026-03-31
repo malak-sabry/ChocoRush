@@ -30,7 +30,7 @@ const Contact = () => {
     <Layout>
       <section className="md:h-[90vh] h-[112vh] max-w-5xl mx-auto px-4 py-16">
         {/* Title */}
-        <h1 className="text-4xl font-bold text-center text-[#6c4c42] mb-8">
+        <h1 className="mt-12 text-4xl font-bold text-center text-[#6c4c42] mb-8">
           Contact Us
         </h1>
 

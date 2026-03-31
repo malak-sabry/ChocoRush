@@ -20,7 +20,7 @@ const Cart = () => {
       {/* BACKDROP */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/30"
+          className="fixed inset-0 z-60 bg-black/30"
           onClick={() => setOpen(false)}
         />
       )}
@@ -28,7 +28,7 @@ const Cart = () => {
       {/* CART DRAWER */}
       <aside
         className={`
-          fixed top-0 right-0 z-50
+          fixed top-0 right-0 z-70
           w-full sm:w-[420px] h-screen
           bg-[#c0b5aa]
           flex flex-col

@@ -8,6 +8,35 @@ import { toast } from "react-toastify";
 
 const API_BASE = "/api";
 
+const FavouriteSkeleton = () => (
+  <div className="flex items-center gap-3 sm:gap-6 p-4 sm:p-5 border rounded-xl bg-[#E3D0B5] shadow-sm mb-6">
+    {/* Image */}
+    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-md bg-[#C9B8A8] shrink-0 relative overflow-hidden">
+      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+    </div>
+
+    {/* Info */}
+    <div className="flex-1 min-w-0 space-y-2.5">
+      <div className="h-4 w-3/4 rounded-full bg-[#C9B8A8] relative overflow-hidden">
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite_0.1s] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      </div>
+      <div className="h-3.5 w-1/4 rounded-full bg-[#C9B8A8] relative overflow-hidden">
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite_0.2s] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      </div>
+    </div>
+
+    {/* Actions */}
+    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="w-9 h-9 rounded-full bg-[#C9B8A8] relative overflow-hidden">
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite_0.3s] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      </div>
+      <div className="w-16 h-8 rounded-full bg-[#C9B8A8] relative overflow-hidden">
+        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite_0.4s] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      </div>
+    </div>
+  </div>
+);
+
 const Favourites = () => {
   const [favourites, setFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,11 +89,16 @@ const Favourites = () => {
     }
   };
 
-  if (loading) return <p className="text-center pt-10">Loading favourites...</p>;
   if (error) return <p className="text-center pt-10 text-red-600">{error}</p>;
 
   return (
     <Layout>
+      <style>{`
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+      `}</style>
+
       <div className="w-[92%] sm:w-[80%] lg:w-[70%] mx-auto pt-10 mb-4">
         <div className="space-y-6">
 
@@ -84,15 +118,11 @@ const Favourites = () => {
               to="/shop"
               className="
                 inline-flex items-center justify-center gap-2
-                px-5 py-2.5 w-fit
-                rounded-full
+                px-5 py-2.5 w-fit rounded-full
                 bg-[#4F342F] text-[#E8DED3]
-                text-sm font-semibold
-                shadow-sm
-                hover:bg-[#573b38]
-                hover:shadow-md
-                active:scale-95
-                transition-all duration-200
+                text-sm font-semibold shadow-sm
+                hover:bg-[#573b38] hover:shadow-md
+                active:scale-95 transition-all duration-200
               "
             >
               <ArrowLeft size={16} />
@@ -100,93 +130,90 @@ const Favourites = () => {
             </Link>
           </div>
 
+          {/* Skeleton */}
+          {loading && (
+            <div className="space-y-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <FavouriteSkeleton key={i} />
+              ))}
+            </div>
+          )}
+
           {/* Empty state */}
-          {favourites.length === 0 && (
+          {!loading && favourites.length === 0 && (
             <p className="text-gray-500">No favourite items found.</p>
           )}
 
           {/* Favourite cards */}
-          <div className="space-y-4">
-            {favourites.map(item => (
-              item.productId && (
-                <div
-                  key={item._id}
-                  className="flex items-center gap-3 sm:gap-6 p-4 sm:p-5 border rounded-xl
-                  bg-[#E3D0B5] shadow-sm hover:shadow-md transition cursor-pointer mb-6"
-                  onClick={() => navigate(`/shop/${item.productId._id}`)}
-                >
-                  {/* Image */}
-                  <img
-                    src={`${API_BASE}/images/${item.productId.coverImage}`}
-                    alt={item.productId.title}
-                    className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-md border shrink-0"
-                  />
+          {!loading && (
+            <div className="space-y-4">
+              {favourites.map(item => (
+                item.productId && (
+                  <div
+                    key={item._id}
+                    className="flex items-center gap-3 sm:gap-6 p-4 sm:p-5 border rounded-xl
+                    bg-[#E3D0B5] shadow-sm hover:shadow-md transition cursor-pointer mb-6"
+                    onClick={() => navigate(`/shop/${item.productId._id}`)}
+                  >
+                    {/* Image */}
+                    <img
+                      src={`${API_BASE}/images/${item.productId.coverImage}`}
+                      alt={item.productId.title}
+                      className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-md border shrink-0"
+                    />
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-sm sm:text-lg font-semibold text-gray-800 truncate">
-                      {item.productId.title}
-                    </h2>
-                    <p className="mt-1 text-[#7B3C34] font-bold text-sm sm:text-base">
-                      ${item.productId.price}
-                    </p>
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-sm sm:text-lg font-semibold text-gray-800 truncate">
+                        {item.productId.title}
+                      </h2>
+                      <p className="mt-1 text-[#7B3C34] font-bold text-sm sm:text-base">
+                        ${item.productId.price}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleRemove(item.productId._id); }}
+                        className="group p-2 transition active:scale-90"
+                        title="Remove from favourites"
+                      >
+                        <Heart
+                          size={22}
+                          fill="#7B3C34"
+                          stroke="#7B3C34"
+                          className="cursor-pointer group-hover:fill-[#4F342F] group-hover:stroke-[#4F342F]"
+                        />
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          handleAddToCart(e, item.productId._id);
+                          toast.success("Added To Cart Successfully!");
+                        }}
+                        disabled={addingToCart[item.productId._id]}
+                        className="cursor-pointer flex items-center gap-1.5
+                          px-3 py-2 rounded-full
+                          bg-[#4F342F] text-[#E8DED3]
+                          text-xs font-semibold shadow-sm
+                          hover:bg-[#7B3C34] hover:shadow-md
+                          active:scale-95
+                          disabled:opacity-60 disabled:cursor-not-allowed
+                          transition-all duration-200"
+                        title="Add to cart"
+                      >
+                        <ShoppingCart className="w-4 h-4 cursor-pointer" />
+                        <span className="hidden sm:inline">
+                          {addingToCart[item.productId._id] ? "Adding..." : "Add"}
+                        </span>
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-
-                    {/* Heart / Remove */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleRemove(item.productId._id); }}
-                      className="group p-2 transition active:scale-90"
-                      title="Remove from favourites"
-                    >
-                      <Heart
-                        size={22}
-                        fill="#7B3C34"
-                        stroke="#7B3C34"
-                        className="cursor-pointer
-                        
-                          group-hover:fill-[#4F342F]
-                          group-hover:stroke-[#4F342F]
-                        
-                      
-                        "
-                      />
-                    </button>
-
-                    {/* Add to Cart */}
-                    <button
-                      onClick={(e) => {
-                        handleAddToCart(e, item.productId._id);
-                        toast.success("Added To Cart Successfully!");
-                      }}
-                      disabled={addingToCart[item.productId._id]}
-                      className=" cursor-pointer
-                        flex items-center gap-1.5
-                        px-3 py-2 rounded-full
-                        bg-[#4F342F] text-[#E8DED3]
-                        text-xs font-semibold
-                        shadow-sm
-                        hover:bg-[#7B3C34]
-                        hover:shadow-md
-                        active:scale-95
-                        disabled:opacity-60 disabled:cursor-not-allowed
-                        transition-all duration-200
-                      "
-                      title="Add to cart"
-                    >
-                      <ShoppingCart className="w-4 h-4 cursor-pointer" />
-                      <span className="hidden sm:inline">
-                        {addingToCart[item.productId._id] ? "Adding..." : "Add"}
-                      </span>
-                    </button>
-
-                  </div>
-                </div>
-              )
-            ))}
-          </div>
+                )
+              ))}
+            </div>
+          )}
 
         </div>
       </div>

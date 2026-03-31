@@ -42,11 +42,12 @@ export default function About() {
         rel="stylesheet"
       />
 
-      <div className="min-h-screen px-4 sm:px-6 py-10 sm:py-16 bg-[#E8DED3] font-serif mb-4">
+      <div className=" min-h-screen px-4 sm:px-6 py-10 sm:py-16 bg-[#E8DED3]
+       font-serif mb-4">
         <div className="max-w-4xl mx-auto flex flex-col gap-12 sm:gap-16">
 
           {/* ── Our Story Section ── */}
-          <section className="relative rounded-3xl p-6 sm:p-10 overflow-hidden bg-[#E3D0B5] border border-[#E4D1B6] shadow-md">
+          <section className="mt-12 relative rounded-3xl p-6 sm:p-10 overflow-hidden bg-[#E3D0B5] border border-[#E4D1B6] shadow-md">
 
             {/* Decorative corner accent */}
             <div className="absolute top-0 left-0 w-24 h-24 rounded-br-full opacity-40 pointer-events-none bg-[#E4D1B6]" />

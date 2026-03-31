@@ -95,7 +95,13 @@ const CategoryProducts = () => {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
 
         {/* PAGE HEADING */}
-        <h1 className="text-xl sm:text-2xl md:text-3xl capitalize font-bold mb-4 sm:mb-6 text-[#4a3728]">
+
+        <h1 className="
+         font-semibold tracking-wide mt-4 relative inline-block
+            after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-1/3 after:bg-[#C9A66B] after:rounded-full
+        ms-3
+        text-3xl 
+         sm:text-2xl md:text-3xl capitalize  mb-7 sm:mb-6 text-[#4a3728]">
           {category?.name ? `${category.name} Chocolates` : "Category Chocolates"}
         </h1>
 

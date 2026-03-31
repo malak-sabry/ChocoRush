@@ -49,7 +49,7 @@ The application also includes an **Admin Dashboard** that allows administrators 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/malak-sabry/chocoRush
+git clone
 cd ChocoRush
 ```
 

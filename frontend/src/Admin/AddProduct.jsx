@@ -76,7 +76,7 @@ const AddProduct = () => {
 
     try {
       setSubmitting(true);
-      const res = await axios.post("/products", fd, {
+      const res = await axios.post("/api/products", fd, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });

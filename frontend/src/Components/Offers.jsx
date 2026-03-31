@@ -122,7 +122,7 @@ const Offers = () => {
                   className="my-2 relative bg-[#E8DED3] rounded-2xl p-4 w-full sm:max-w-[230px] shadow-sm
                     hover:shadow-md transition-all duration-300 ease-out hover:-translate-y-1 cursor-pointer"
                 >
-                  <span className="absolute top-3 right-3 bg-[#1C120A]/80 text-white text-xs font-semibold px-2 py-1 rounded-md">
+                  <span className="absolute z-20 top-3 right-3 bg-[#1C120A]/80 text-white text-xs font-semibold px-2 py-1 rounded-md">
                     {product.discountPercent}%
                   </span>
 

@@ -76,8 +76,8 @@ if (products.length === 0) {
       <Oval 
         height={80} 
         width={80} 
-        color="#4fa94d" 
-        secondaryColor="#4fa94d" 
+        color="#BCAD9D" 
+        secondaryColor="#F3E8DB" 
         strokeWidth={5}
       />
     </div>
